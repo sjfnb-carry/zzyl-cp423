@@ -9,7 +9,7 @@ import com.zzyl.nursing.domain.NursingProject;
  * 护理项目Mapper接口
  * 
  * @author alexis
- * @date 2024-12-28
+ * @date 2024-12-30
  */
 @Mapper
 public interface NursingProjectMapper extends BaseMapper<NursingProject>

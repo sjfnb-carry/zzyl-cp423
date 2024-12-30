@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * 护理项目Service接口
  * 
  * @author alexis
- * @date 2024-12-28
+ * @date 2024-12-30
  */
 public interface INursingProjectService extends IService<NursingProject>
 {

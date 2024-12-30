@@ -14,7 +14,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
  * 护理项目Service业务层处理
  * 
  * @author alexis
- * @date 2024-12-28
+ * @date 2024-12-30
  */
 @Service
 public class NursingProjectServiceImpl extends ServiceImpl<NursingProjectMapper, NursingProject> implements INursingProjectService
@@ -55,7 +55,6 @@ public class NursingProjectServiceImpl extends ServiceImpl<NursingProjectMapper,
     @Override
     public int insertNursingProject(NursingProject nursingProject)
     {
-//        nursingProject.setCreateTime(DateUtils.getNowDate());
         return nursingProjectMapper.insert(nursingProject);
     }
 
@@ -68,7 +67,6 @@ public class NursingProjectServiceImpl extends ServiceImpl<NursingProjectMapper,
     @Override
     public int updateNursingProject(NursingProject nursingProject)
     {
-//        nursingProject.setUpdateTime(DateUtils.getNowDate());
         return nursingProjectMapper.updateById(nursingProject);
     }
 

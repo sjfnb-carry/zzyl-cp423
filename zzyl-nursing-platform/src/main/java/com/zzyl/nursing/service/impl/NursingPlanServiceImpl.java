@@ -1,5 +1,6 @@
 package com.zzyl.nursing.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
 import com.zzyl.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,15 +8,16 @@ import org.springframework.stereotype.Service;
 import com.zzyl.nursing.mapper.NursingPlanMapper;
 import com.zzyl.nursing.domain.NursingPlan;
 import com.zzyl.nursing.service.INursingPlanService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
  * 护理计划Service业务层处理
  * 
- * @author ruoyi
- * @date 2024-12-28
+ * @author alexis
+ * @date 2024-12-30
  */
 @Service
-public class NursingPlanServiceImpl implements INursingPlanService 
+public class NursingPlanServiceImpl extends ServiceImpl<NursingPlanMapper, NursingPlan> implements INursingPlanService
 {
     @Autowired
     private NursingPlanMapper nursingPlanMapper;
@@ -29,7 +31,7 @@ public class NursingPlanServiceImpl implements INursingPlanService
     @Override
     public NursingPlan selectNursingPlanById(Long id)
     {
-        return nursingPlanMapper.selectNursingPlanById(id);
+        return nursingPlanMapper.selectById(id);
     }
 
     /**
@@ -53,8 +55,7 @@ public class NursingPlanServiceImpl implements INursingPlanService
     @Override
     public int insertNursingPlan(NursingPlan nursingPlan)
     {
-        nursingPlan.setCreateTime(DateUtils.getNowDate());
-        return nursingPlanMapper.insertNursingPlan(nursingPlan);
+        return nursingPlanMapper.insert(nursingPlan);
     }
 
     /**
@@ -66,8 +67,7 @@ public class NursingPlanServiceImpl implements INursingPlanService
     @Override
     public int updateNursingPlan(NursingPlan nursingPlan)
     {
-        nursingPlan.setUpdateTime(DateUtils.getNowDate());
-        return nursingPlanMapper.updateNursingPlan(nursingPlan);
+        return nursingPlanMapper.updateById(nursingPlan);
     }
 
     /**
@@ -79,7 +79,7 @@ public class NursingPlanServiceImpl implements INursingPlanService
     @Override
     public int deleteNursingPlanByIds(Long[] ids)
     {
-        return nursingPlanMapper.deleteNursingPlanByIds(ids);
+        return nursingPlanMapper.deleteBatchIds(Arrays.asList(ids));
     }
 
     /**
@@ -91,6 +91,6 @@ public class NursingPlanServiceImpl implements INursingPlanService
     @Override
     public int deleteNursingPlanById(Long id)
     {
-        return nursingPlanMapper.deleteNursingPlanById(id);
+        return nursingPlanMapper.deleteById(id);
     }
 }
