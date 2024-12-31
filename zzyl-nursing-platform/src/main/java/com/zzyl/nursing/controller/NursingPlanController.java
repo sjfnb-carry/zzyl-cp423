@@ -4,6 +4,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import com.zzyl.common.core.domain.R;
+import com.zzyl.nursing.dto.NursingPlanDto;
+import com.zzyl.nursing.vo.NursingPlanVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -73,7 +75,7 @@ public class NursingPlanController extends BaseController
     @ApiOperation("获取护理计划详细信息")
     @PreAuthorize("@ss.hasPermi('nursing:plan:query')")
     @GetMapping(value = "/{id}")
-    public R<NursingPlan> getInfo(@ApiParam("护理计划ID") @PathVariable("id") Long id)
+    public R<NursingPlanVo> getInfo(@ApiParam("护理计划ID") @PathVariable("id") Long id)
     {
         return R.ok(nursingPlanService.selectNursingPlanById(id));
     }
@@ -85,9 +87,9 @@ public class NursingPlanController extends BaseController
     @PreAuthorize("@ss.hasPermi('nursing:plan:add')")
     @Log(title = "护理计划", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@ApiParam("护理计划信息") @RequestBody NursingPlan nursingPlan)
+    public AjaxResult add(@ApiParam("护理计划信息") @RequestBody NursingPlanDto nursingPlanDto)
     {
-        return toAjax(nursingPlanService.insertNursingPlan(nursingPlan));
+        return toAjax(nursingPlanService.insertNursingPlan(nursingPlanDto));
     }
 
     /**
@@ -97,9 +99,9 @@ public class NursingPlanController extends BaseController
     @PreAuthorize("@ss.hasPermi('nursing:plan:edit')")
     @Log(title = "护理计划", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@ApiParam("护理计划信息") @RequestBody NursingPlan nursingPlan)
+    public AjaxResult edit(@ApiParam("护理计划信息") @RequestBody NursingPlanDto nursingPlanDto)
     {
-        return toAjax(nursingPlanService.updateNursingPlan(nursingPlan));
+        return toAjax(nursingPlanService.updateNursingPlan(nursingPlanDto));
     }
 
     /**

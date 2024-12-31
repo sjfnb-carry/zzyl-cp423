@@ -4,6 +4,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import com.zzyl.common.core.domain.R;
+import com.zzyl.nursing.vo.NursingProjectVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -112,5 +113,10 @@ public class NursingProjectController extends BaseController
     public AjaxResult remove(@ApiParam("护理项目ID数组") @PathVariable Long[] ids)
     {
         return toAjax(nursingProjectService.deleteNursingProjectByIds(ids));
+    }
+
+    @GetMapping("/all")
+    public R<List<NursingProjectVo>> getAllProjects() {
+       return R.ok(nursingProjectService.getAllProjects());
     }
 }
