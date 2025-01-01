@@ -53,4 +53,9 @@ public interface IFloorService extends IService<Floor>
      */
     public int deleteFloorById(Long id);
 
+    /**
+     * 查询所有楼层（负责老人）
+     * @return
+     */
+    List<Floor> selectAllByNur();
 }

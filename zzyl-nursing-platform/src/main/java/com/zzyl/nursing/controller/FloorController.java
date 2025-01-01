@@ -88,4 +88,11 @@ public class FloorController extends BaseController
     {
         return toAjax(floorService.deleteFloorByIds(ids));
     }
+
+    @GetMapping("/getAllFloorsWithNur")
+    @ApiOperation(value = "获取所有楼层 (负责老人)", notes = "无需参数，获取所有楼层，返回楼层信息列表")
+    public R<List<Floor>> getAllFloorsWithNur() {
+        List<Floor> list = floorService.selectAllByNur();
+        return R.ok(list);
+    }
 }

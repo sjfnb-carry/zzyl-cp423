@@ -63,4 +63,9 @@ public interface FloorMapper extends BaseMapper<Floor>
      */
     public int deleteFloorByIds(Long[] ids);
 
+    /**
+     * 查询所有楼层（负责老人）
+     * @return 结果
+     */
+    List<Floor> selectAllByNur();
 }

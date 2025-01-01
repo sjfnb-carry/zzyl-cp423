@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * 楼层Service业务层处理
@@ -79,6 +80,14 @@ public class FloorServiceImpl extends ServiceImpl<FloorMapper, Floor> implements
     public int deleteFloorById(Long id)
     {
         return removeById(id) ? 1 : 0;
+    }
+
+    /**
+     * 查询所有楼层（负责老人）
+     */
+    @Override
+    public List<Floor> selectAllByNur() {
+        return floorMapper.selectAllByNur();
     }
 
 }

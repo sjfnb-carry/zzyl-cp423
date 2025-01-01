@@ -137,3 +137,6 @@ aliyun:
   oss:
     endpoint: https://oss-cn-beijing.aliyuncs.com
     bucketName: java423
+
+dept:
+  nursingId: 201

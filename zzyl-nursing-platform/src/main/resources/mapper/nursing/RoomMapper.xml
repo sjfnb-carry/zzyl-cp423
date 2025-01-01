@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zzyl.nursing.mapper.RoomMapper">
-
+    
     <resultMap type="Room" id="RoomResult">
         <result property="id"    column="id"    />
         <result property="code"    column="code"    />
@@ -24,7 +24,7 @@
 
     <select id="selectRoomList" parameterType="Room" resultMap="RoomResult">
         <include refid="selectRoomVo"/>
-        <where>
+        <where>  
             <if test="code != null  and code != ''"> and code = #{code}</if>
             <if test="sort != null "> and sort = #{sort}</if>
             <if test="typeName != null  and typeName != ''"> and type_name like concat('%', #{typeName}, '%')</if>
@@ -32,7 +32,7 @@
             <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
         </where>
     </select>
-
+    
     <select id="selectRoomById" parameterType="Long" resultMap="RoomResult">
         <include refid="selectRoomVo"/>
         where id = #{id}
@@ -96,7 +96,7 @@
             <result column="ename" property="ename"/>
             <result column="eid" property="elderId"/>
             <collection property="userVos" ofType="com.zzyl.common.core.domain.entity.SysUser" column="eid"
-                        select="com.ruoyi.elder.mapper.NursingElderMapper.selectUserByElderId">
+                        select="com.zzyl.nursing.mapper.NursingElderMapper.selectUserByElderId">
                 <result column="nick_name" property="nickName"/>
                 <result column="userId" property="userId"/>
             </collection>
@@ -134,7 +134,7 @@
             <if test="createBy != null">create_by,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="remark != null">remark,</if>
-        </trim>
+         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="code != null">#{code},</if>
             <if test="sort != null">#{sort},</if>
@@ -146,7 +146,7 @@
             <if test="createBy != null">#{createBy},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="remark != null">#{remark},</if>
-        </trim>
+         </trim>
     </insert>
 
     <update id="updateRoom" parameterType="Room">
@@ -171,7 +171,7 @@
     </delete>
 
     <delete id="deleteRoomByIds" parameterType="String">
-        delete from room where id in
+        delete from room where id in 
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
