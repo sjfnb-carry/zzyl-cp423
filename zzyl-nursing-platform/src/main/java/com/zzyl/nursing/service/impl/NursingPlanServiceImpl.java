@@ -2,7 +2,8 @@ package com.zzyl.nursing.service.impl;
 
 import java.util.Arrays;
 import java.util.List;
-import com.zzyl.common.utils.DateUtils;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.zzyl.common.utils.bean.BeanUtils;
 import com.zzyl.nursing.domain.NursingProjectPlan;
 import com.zzyl.nursing.dto.NursingPlanDto;
@@ -145,5 +146,17 @@ public class NursingPlanServiceImpl extends ServiceImpl<NursingPlanMapper, Nursi
     public int deleteNursingPlanById(Long id)
     {
         return nursingPlanMapper.deleteById(id);
+    }
+
+    /**
+     * 查询所有护理计划
+     *
+     * @return 护理计划列表
+     */
+    @Override
+    public List<NursingPlan> getAllNursingPlans() {
+        LambdaQueryWrapper<NursingPlan> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(NursingPlan::getStatus, 1);
+        return list(queryWrapper);
     }
 }
