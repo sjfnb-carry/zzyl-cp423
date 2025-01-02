@@ -375,6 +375,45 @@ INSERT INTO `nursing_project_plan` VALUES (1736,133,87,'19:16:49',1,7,'2024-08-1
 UNLOCK TABLES;
 
 --
+-- Table structure for table `nursing_task`
+--
+
+DROP TABLE IF EXISTS `nursing_task`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `nursing_task` (
+                                `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                `nursing_id` varchar(50) DEFAULT NULL COMMENT '护理员id',
+                                `project_id` int NOT NULL COMMENT '项目id',
+                                `project_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '护理项目名称',
+                                `elder_id` bigint DEFAULT NULL COMMENT '老人id',
+                                `elder_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '老人姓名',
+                                `bed_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '床位编号',
+                                `estimated_server_time` datetime DEFAULT NULL COMMENT '预计服务时间',
+                                `real_server_time` datetime DEFAULT NULL COMMENT '实际服务时间',
+                                `mark` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '执行记录',
+                                `cancel_reason` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '取消原因',
+                                `status` int DEFAULT NULL COMMENT '状态  1待执行 2已执行 3已关闭 ',
+                                `task_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '执行图片',
+                                `create_time` datetime NOT NULL COMMENT '创建时间',
+                                `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+                                `create_by` bigint DEFAULT NULL COMMENT '创建人id',
+                                `update_by` bigint DEFAULT NULL COMMENT '更新人id',
+                                `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '备注',
+                                PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='护理任务表';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `nursing_task`
+--
+
+LOCK TABLES `nursing_task` WRITE;
+/*!40000 ALTER TABLE `nursing_task` DISABLE KEYS */;
+/*!40000 ALTER TABLE `nursing_task` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `room`
 --
 
