@@ -77,7 +77,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                  left join bed b on b.room_id = r.id
                  left join elder e on b.id = e.bed_id
         where r.floor_id = #{floorId}
-        order by r.sort, r.create_time desc
+        order by r.sort, r.create_time desc,b.sort,b.create_time desc
     </select>
 
 
