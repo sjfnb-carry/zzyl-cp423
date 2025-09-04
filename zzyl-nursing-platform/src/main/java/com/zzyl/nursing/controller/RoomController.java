@@ -26,9 +26,8 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/elder/room")
-@Api(tags =  "房间相关接口")
-public class RoomController extends BaseController
-{
+@Api(tags = "房间相关接口")
+public class RoomController extends BaseController {
     @Autowired
     private IRoomService roomService;
 
@@ -41,18 +40,18 @@ public class RoomController extends BaseController
 
     @GetMapping("/getRoomsByFloorId/{floorId}")
     @ApiOperation("获取所有房间（入住配置）")
-    public R<List<RoomVo>> getRoomsByFloorId(@ApiParam(value = "楼层ID", required = true)  @PathVariable Long floorId) {
+    public R<List<RoomVo>> getRoomsByFloorId(@ApiParam(value = "楼层ID", required = true) @PathVariable Long floorId) {
         List<RoomVo> list = roomService.getRoomsByFloorId(floorId);
         return R.ok(list);
     }
+
     /**
      * 查询房间列表
      */
     @PreAuthorize("@ss.hasPermi('elder:room:list')")
     @GetMapping("/list")
     @ApiOperation("查询房间列表")
-    public TableDataInfo list(@ApiParam(value = "房间信息", required = true)  Room room)
-    {
+    public TableDataInfo list(@ApiParam(value = "房间信息", required = true) Room room) {
         startPage();
         List<Room> list = roomService.selectRoomList(room);
         return getDataTable(list);
@@ -64,8 +63,7 @@ public class RoomController extends BaseController
     @PreAuthorize("@ss.hasPermi('elder:room:query')")
     @GetMapping(value = "/{id}")
     @ApiOperation("获取房间详细信息")
-    public R<Room> getInfo(@ApiParam(value = "房间ID", required = true)  @PathVariable("id") Long id)
-    {
+    public R<Room> getInfo(@ApiParam(value = "房间ID", required = true) @PathVariable("id") Long id) {
         return R.ok(roomService.selectRoomById(id));
     }
 
@@ -76,8 +74,7 @@ public class RoomController extends BaseController
     @Log(title = "房间", businessType = BusinessType.INSERT)
     @PostMapping
     @ApiOperation("新增房间")
-    public AjaxResult add(@ApiParam(value = "房间信息", required = true)  @RequestBody Room room)
-    {
+    public AjaxResult add(@ApiParam(value = "房间信息", required = true) @RequestBody Room room) {
         return toAjax(roomService.insertRoom(room));
     }
 
@@ -88,8 +85,7 @@ public class RoomController extends BaseController
     @PreAuthorize("@ss.hasPermi('elder:room:edit')")
     @Log(title = "房间", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@ApiParam(value = "房间信息", required = true)  @RequestBody Room room)
-    {
+    public AjaxResult edit(@ApiParam(value = "房间信息", required = true) @RequestBody Room room) {
         return toAjax(roomService.updateRoom(room));
     }
 
@@ -100,9 +96,16 @@ public class RoomController extends BaseController
     @PreAuthorize("@ss.hasPermi('elder:room:remove')")
     @Log(title = "房间", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public AjaxResult remove(@ApiParam(value = "房间ID数组", required = true)  @PathVariable Long[] ids)
-    {
+    public AjaxResult remove(@ApiParam(value = "房间ID数组", required = true) @PathVariable Long[] ids) {
         return toAjax(roomService.deleteRoomByIds(ids));
+    }
+
+    @ApiOperation("根据房间id查询房间数据(楼层、房间、价格)")
+    @PreAuthorize("@ss.hasPermi('elder:room:query')")
+    @GetMapping("/one/{id}")
+    public R<RoomVo> getRoomDataById(@PathVariable Integer id) {
+        RoomVo data = roomService.getRoomDataById(id);
+        return R.ok(data);
     }
 
 }

@@ -7,6 +7,7 @@ import com.zzyl.common.core.domain.R;
 import com.zzyl.common.enums.BusinessType;
 import com.zzyl.nursing.domain.Floor;
 import com.zzyl.nursing.service.IFloorService;
+import com.zzyl.nursing.vo.TreeVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -24,9 +25,8 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/elder/floor")
-@Api(tags =  "楼层相关接口")
-public class FloorController extends BaseController
-{
+@Api(tags = "楼层相关接口")
+public class FloorController extends BaseController {
     @Autowired
     private IFloorService floorService;
 
@@ -36,8 +36,7 @@ public class FloorController extends BaseController
     @PreAuthorize("@ss.hasPermi('elder:floor:list')")
     @GetMapping("/list")
     @ApiOperation("查询所有楼层列表")
-    public R<List<Floor>> list()
-    {
+    public R<List<Floor>> list() {
         List<Floor> list = floorService.list();
         return R.ok(list);
     }
@@ -48,8 +47,7 @@ public class FloorController extends BaseController
     @PreAuthorize("@ss.hasPermi('elder:floor:query')")
     @GetMapping(value = "/{id}")
     @ApiOperation("获取楼层详细信息")
-    public R<Floor> getInfo(@ApiParam(value = "楼层ID", required = true) @PathVariable("id") Long id)
-    {
+    public R<Floor> getInfo(@ApiParam(value = "楼层ID", required = true) @PathVariable("id") Long id) {
         return R.ok(floorService.selectFloorById(id));
     }
 
@@ -60,8 +58,7 @@ public class FloorController extends BaseController
     @Log(title = "楼层", businessType = BusinessType.INSERT)
     @PostMapping
     @ApiOperation("新增楼层")
-    public AjaxResult add(@ApiParam(value = "楼层信息", required = true)  @RequestBody Floor floor)
-    {
+    public AjaxResult add(@ApiParam(value = "楼层信息", required = true) @RequestBody Floor floor) {
         return toAjax(floorService.insertFloor(floor));
     }
 
@@ -72,8 +69,7 @@ public class FloorController extends BaseController
     @PreAuthorize("@ss.hasPermi('elder:floor:edit')")
     @Log(title = "楼层", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@ApiParam(value = "楼层信息", required = true) @RequestBody Floor floor)
-    {
+    public AjaxResult edit(@ApiParam(value = "楼层信息", required = true) @RequestBody Floor floor) {
         return toAjax(floorService.updateFloor(floor));
     }
 
@@ -84,8 +80,7 @@ public class FloorController extends BaseController
     @PreAuthorize("@ss.hasPermi('elder:floor:remove')")
     @Log(title = "楼层", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public AjaxResult remove(@ApiParam(value = "楼层ID", required = true) @PathVariable Long[] ids)
-    {
+    public AjaxResult remove(@ApiParam(value = "楼层ID", required = true) @PathVariable Long[] ids) {
         return toAjax(floorService.deleteFloorByIds(ids));
     }
 
@@ -93,6 +88,13 @@ public class FloorController extends BaseController
     @ApiOperation(value = "获取所有楼层 (负责老人)", notes = "无需参数，获取所有楼层，返回楼层信息列表")
     public R<List<Floor>> getAllFloorsWithNur() {
         List<Floor> list = floorService.selectAllByNur();
+        return R.ok(list);
+    }
+
+    @ApiOperation(value = "1.3 根据床位状态查询获取所有楼层数据")
+    @GetMapping("/getRoomAndBedByBedStatus/{status}")
+    public R<List<TreeVo>> getRoomAndBedByBedStatus(@PathVariable Integer status){
+        List<TreeVo> list =  floorService.selectRoomAndBedByBedStatus(status);
         return R.ok(list);
     }
 }

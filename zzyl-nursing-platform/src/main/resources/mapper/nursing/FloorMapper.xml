@@ -1,32 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zzyl.nursing.mapper.FloorMapper">
-    
+
     <resultMap type="Floor" id="FloorResult">
-        <result property="id"    column="id"    />
-        <result property="name"    column="name"    />
-        <result property="code"    column="code"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="remark"    column="remark"    />
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="remark" column="remark"/>
     </resultMap>
 
     <sql id="selectFloorVo">
-        select id, name, code, create_time, update_time, create_by, update_by, remark from floor
+        select id,
+               name,
+               code,
+               create_time,
+               update_time,
+               create_by,
+               update_by,
+               remark
+        from floor
     </sql>
 
     <select id="selectFloorList" parameterType="Floor" resultMap="FloorResult">
         <include refid="selectFloorVo"/>
-        <where>  
-            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
-            <if test="code != null "> and code = #{code}</if>
+        <where>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="code != null ">and code = #{code}</if>
         </where>
     </select>
-    
+
     <select id="selectFloorById" parameterType="Long" resultMap="FloorResult">
         <include refid="selectFloorVo"/>
         where id = #{id}
@@ -42,7 +50,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createBy != null">create_by,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="remark != null">remark,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null">#{name},</if>
             <if test="code != null">#{code},</if>
@@ -51,7 +59,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createBy != null">#{createBy},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="remark != null">#{remark},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateFloor" parameterType="Floor">
@@ -73,7 +81,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteFloorByIds" parameterType="String">
-        delete from floor where id in 
+        delete from floor where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
@@ -88,5 +96,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where b.bed_status = 1
         group by f.id
         order by code, create_time desc
+    </select>
+    <resultMap id="BedInfoTreeVoResult" type="com.zzyl.nursing.vo.TreeVo">
+        <id column="fid" property="value"/>
+        <result column="fname" property="label"/>
+        <collection property="children" ofType="com.zzyl.nursing.vo.TreeVo">
+            <id column="rid" property="value"/>
+            <result column="rcode" property="label"/>
+            <collection property="children" ofType="com.zzyl.nursing.vo.TreeVo">
+                <id column="bid" property="value"/>
+                <result column="bnumber" property="label"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="selectRoomAndBedByBedStatus" resultMap="BedInfoTreeVoResult">
+        select t1.id as fid, t1.name as fname,
+        t2.id rid, t2.code as rcode,
+        t3.id as bid, t3.bed_number as bnumber
+        from floor t1
+        join zzyl.room t2 on t1.id = t2.floor_id
+        join zzyl.bed t3 on t2.id = t3.room_id
+        where t3.bed_status = #{status}
+        order by t1.code, t2.sort, t3.sort
     </select>
 </mapper>
