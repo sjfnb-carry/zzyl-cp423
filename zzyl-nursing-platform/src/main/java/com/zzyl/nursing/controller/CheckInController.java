@@ -10,6 +10,7 @@ import com.zzyl.common.utils.poi.ExcelUtil;
 import com.zzyl.nursing.domain.CheckIn;
 import com.zzyl.nursing.dto.CheckInApplyDto;
 import com.zzyl.nursing.service.ICheckInService;
+import com.zzyl.nursing.vo.CheckInDetailVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -100,11 +101,26 @@ public class CheckInController extends BaseController {
     public AjaxResult remove(@ApiParam("入住ID数组") @PathVariable Long[] ids) {
         return toAjax(checkInService.deleteCheckInByIds(ids));
     }
+
+    /**
+     * 入住办理
+     */
     @ApiOperation("入住办理")
     @PreAuthorize("@ss.hasPermi('nursing:checkIn:add')")
     @PostMapping("/apply")
-    public R<String> apply(@ApiParam("申请入住表单") @RequestBody CheckInApplyDto checkInApplyDto) {
-        checkInService.apply(checkInApplyDto);
+    public R<String> apply(@ApiParam("申请入住信息") @RequestBody CheckInApplyDto checkInApplyDto) {
+        checkInService.applyCheckIn(checkInApplyDto);
         return R.ok();
     }
+
+    /**
+     * 获取入住详细信息
+     */
+    @ApiOperation("获取入住详细信息")
+    @PreAuthorize("@ss.hasPermi('nursing:checkIn:query')")
+    @GetMapping(value = "/detail/{id}")
+    public R<CheckInDetailVo> getDetail(@ApiParam("入住ID") @PathVariable("id") Long id) {
+        return R.ok(checkInService.selectCheckInDetailById(id));
+    }
+
 }

@@ -180,9 +180,7 @@ public class GlobalExceptionHandler {
         }
 
         // 从MAP中查找对应的中文描述
-        if (UNIQUE_KEY_MAP.containsKey(rawKeyName)) {
-            friendlyFieldName = UNIQUE_KEY_MAP.get(rawKeyName);
-        }
+        friendlyFieldName = UNIQUE_KEY_MAP.getOrDefault(rawKeyName, "");
         // 构建并返回对用户友好的错误信息
         String errorMessage = String.format("%s: [%s] 已存在，请勿重复添加。", friendlyFieldName, value);
         return AjaxResult.error(errorMessage);

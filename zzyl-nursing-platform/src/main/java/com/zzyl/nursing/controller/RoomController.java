@@ -51,7 +51,7 @@ public class RoomController extends BaseController {
     @PreAuthorize("@ss.hasPermi('elder:room:list')")
     @GetMapping("/list")
     @ApiOperation("查询房间列表")
-    public TableDataInfo list(@ApiParam(value = "房间信息", required = true) Room room) {
+    public TableDataInfo<Room> list(@ApiParam(value = "房间信息", required = true) Room room) {
         startPage();
         List<Room> list = roomService.selectRoomList(room);
         return getDataTable(list);
@@ -100,10 +100,16 @@ public class RoomController extends BaseController {
         return toAjax(roomService.deleteRoomByIds(ids));
     }
 
+    /**
+     * 根据房间id查询房间数据(楼层、房间、价格)
+     * @param id 房间id
+     * @return 房间数据
+     */
+
     @ApiOperation("根据房间id查询房间数据(楼层、房间、价格)")
     @PreAuthorize("@ss.hasPermi('elder:room:query')")
     @GetMapping("/one/{id}")
-    public R<RoomVo> getRoomDataById(@PathVariable Integer id) {
+    public R<RoomVo> getRoomDataById(@ApiParam(value = "房间ID", required = true) @PathVariable Integer id) {
         RoomVo data = roomService.getRoomDataById(id);
         return R.ok(data);
     }
