@@ -102,12 +102,12 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements IR
 
     /**
      * 获取房间数据
+     *
      * @param roomId 房间 id
      * @return 房间数据
      */
     @Override
     public RoomVo getRoomDataById(Integer roomId) {
         return roomMapper.selectFloorAndRoomAndPriceByRoomId(roomId);
-
     }
 }
