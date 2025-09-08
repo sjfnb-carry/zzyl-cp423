@@ -10,4 +10,5 @@ import org.springframework.stereotype.Component;
 public class AliyunOSSProperties {
     private String endpoint;
     private String bucketName;
+    private String region;
 }

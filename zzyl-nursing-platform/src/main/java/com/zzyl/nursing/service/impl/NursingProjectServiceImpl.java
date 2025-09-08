@@ -2,6 +2,7 @@ package com.zzyl.nursing.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zzyl.common.constant.CacheConstants;
 import com.zzyl.nursing.domain.NursingProject;
 import com.zzyl.nursing.mapper.NursingProjectMapper;
 import com.zzyl.nursing.service.INursingProjectService;
@@ -60,7 +61,7 @@ public class NursingProjectServiceImpl extends ServiceImpl<NursingProjectMapper,
     public int insertNursingProject(NursingProject nursingProject) {
         int num = nursingProjectMapper.insert(nursingProject);
         redisTemplate.delete(CACHE_KEY_PREFIX);
-
+        redisTemplate.opsForSet().remove(CacheConstants.GARBAGE_FILE,nursingProject.getImage());
         return num;
     }
 
@@ -73,8 +74,8 @@ public class NursingProjectServiceImpl extends ServiceImpl<NursingProjectMapper,
     @Override
     public int updateNursingProject(NursingProject nursingProject) {
         int num = nursingProjectMapper.updateById(nursingProject);
+        redisTemplate.opsForSet().remove(CacheConstants.GARBAGE_FILE,nursingProject.getImage());
         redisTemplate.delete(CACHE_KEY_PREFIX);
-
         return num;
     }
 

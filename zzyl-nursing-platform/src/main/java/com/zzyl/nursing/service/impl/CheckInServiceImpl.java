@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zzyl.common.exception.ServiceException;
 import com.zzyl.common.utils.CodeGenerator;
-import com.zzyl.common.utils.IdCardNoUtils;
+import com.zzyl.common.utils.IDCardUtils;
 import com.zzyl.common.utils.bean.BeanUtils;
 import com.zzyl.nursing.domain.*;
 import com.zzyl.nursing.dto.CheckInApplyDto;
@@ -159,7 +159,7 @@ public class CheckInServiceImpl extends ServiceImpl<CheckInMapper, CheckIn> impl
         Elder elder = elderMapper.selectById(checkIn.getElderId());
         CheckInElderVo checkInElderVo = new CheckInElderVo();
         BeanUtils.copyBeanProp(checkInElderVo, elder);
-        int age = IdCardNoUtils.getAgeByIdCard(elder.getIdCardNo());
+        int age = IDCardUtils.getAgeByIdCard(elder.getIdCardNo());
         checkInElderVo.setAge(age);
         checkInDetailVo.setCheckInElderVo(checkInElderVo);
 

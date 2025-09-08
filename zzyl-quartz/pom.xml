@@ -35,6 +35,11 @@
             <artifactId>zzyl-common</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.zzyl</groupId>
+            <artifactId>zzyl-oss</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
