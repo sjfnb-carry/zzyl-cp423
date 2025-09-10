@@ -61,7 +61,7 @@ public class AliyunOSSOperator {
         return endpoint.split("//")[0] + "//" + bucketName + "." + endpoint.split("//")[1] + "/" + objectName;
     }
 
-    public List<String> deleteFile(List<String> keys) throws Exception {
+    public void deleteFile(List<String> keys) throws Exception {
         // Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。
         String endpoint = ossProperties.getEndpoint();
         String bucketName = ossProperties.getBucketName();
@@ -90,7 +90,6 @@ public class AliyunOSSOperator {
             DeleteObjectsResult deleteObjectsResult = ossClient.deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(fileName).withEncodingType("url"));
             List<String> deletedObjects = deleteObjectsResult.getDeletedObjects();
 
-            return deletedObjects;
 //            for (String obj : deletedObjects) {
 //                String deleteObj = URLDecoder.decode(obj, StandardCharsets.UTF_8);
 //                System.out.println(deleteObj);
@@ -112,7 +111,6 @@ public class AliyunOSSOperator {
                 ossClient.shutdown();
             }
         }
-        return null;
     }
     private  String getPathFromUrl(String fileUrl) {
         // 1. 前置条件检查，保证代码健壮性
