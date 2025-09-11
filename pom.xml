@@ -41,11 +41,18 @@
         <hutool-all.version>5.8.10</hutool-all.version>
         <pdfbox.version>2.0.24</pdfbox.version>
         <qianvan.version>0.1.1</qianvan.version>
+        <logstash.version>6.6</logstash.version>
     </properties>
 
     <!-- 依赖声明 -->
     <dependencyManagement>
         <dependencies>
+            <!--logstash模块 -->
+            <dependency>
+                <groupId>net.logstash.logback</groupId>
+                <artifactId>logstash-logback-encoder</artifactId>
+                <version>${logstash.version}</version>
+            </dependency>
             <!--百度千帆大模型-->
             <dependency>
                 <groupId>com.baidubce</groupId>
