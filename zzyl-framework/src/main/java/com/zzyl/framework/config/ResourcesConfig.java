@@ -1,6 +1,9 @@
 package com.zzyl.framework.config;
 
-import java.util.concurrent.TimeUnit;
+import com.zzyl.common.config.RuoYiConfig;
+import com.zzyl.common.constant.Constants;
+import com.zzyl.framework.interceptor.MemberInterceptor;
+import com.zzyl.framework.interceptor.RepeatSubmitInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,24 +14,30 @@ import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import com.zzyl.common.config.RuoYiConfig;
-import com.zzyl.common.constant.Constants;
-import com.zzyl.framework.interceptor.RepeatSubmitInterceptor;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 通用配置
- * 
+ *
  * @author ruoyi
  */
 @Configuration
-public class ResourcesConfig implements WebMvcConfigurer
-{
+public class ResourcesConfig implements WebMvcConfigurer {
     @Autowired
     private RepeatSubmitInterceptor repeatSubmitInterceptor;
 
+    @Autowired
+    private MemberInterceptor memberInterceptor;
+
+    private final String[] excludePaths = new String[]{
+            "/member/user/login",
+            "/member/roomTypes"
+    };
+
+
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry)
-    {
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
         /** 本地文件上传路径 */
         registry.addResourceHandler(Constants.RESOURCE_PREFIX + "/**")
                 .addResourceLocations("file:" + RuoYiConfig.getProfile() + "/");
@@ -41,19 +50,23 @@ public class ResourcesConfig implements WebMvcConfigurer
 
     /**
      * 自定义拦截规则
+     *
+     * @param registry 拦截器注册器，用于注册和配置拦截器
      */
     @Override
-    public void addInterceptors(InterceptorRegistry registry)
-    {
+    public void addInterceptors(InterceptorRegistry registry) {
+        // 注册重复提交拦截器，拦截所有路径
         registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
+        // 注册会员拦截器，拦截会员相关路径，排除指定的免拦截路径
+        registry.addInterceptor(memberInterceptor).addPathPatterns("/member/**").excludePathPatterns(excludePaths);
     }
+
 
     /**
      * 跨域配置
      */
     @Bean
-    public CorsFilter corsFilter()
-    {
+    public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         // 设置访问源地址

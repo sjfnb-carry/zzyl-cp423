@@ -209,3 +209,7 @@ baidu:
   temperature: 0.7
   maxOutputTokens: 2000
   responseFormat: json_object
+
+wechat:
+  appId: wx295ea3b92ca48ee2
+  appSecret: a2f36641eb10e4a1221e002d530d3eb6
