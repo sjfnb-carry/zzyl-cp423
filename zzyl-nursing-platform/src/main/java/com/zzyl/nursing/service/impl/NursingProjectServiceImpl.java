@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 护理项目Service业务层处理
@@ -118,7 +119,7 @@ public class NursingProjectServiceImpl extends ServiceImpl<NursingProjectMapper,
             return voList;
         }
         List<NursingProjectVo> nursingProjectVoList = nursingProjectMapper.getAllProjects();
-        redisTemplate.opsForValue().set(CACHE_KEY_PREFIX, nursingProjectVoList);
+        redisTemplate.opsForValue().set(CACHE_KEY_PREFIX, nursingProjectVoList,1, TimeUnit.DAYS);
         return nursingProjectVoList;
     }
 }
