@@ -2,11 +2,10 @@ package com.zzyl.common.constant;
 
 /**
  * 缓存的key 常量
- * 
+ *
  * @author ruoyi
  */
-public class CacheConstants
-{
+public class CacheConstants {
     /**
      * 登录用户 redis key
      */
@@ -47,7 +46,14 @@ public class CacheConstants
      */
     public final static String HEALTH_REPORT = "healthReport";
 
+    /**
+     * 垃圾文件缓存 key
+     */
     public final static String GARBAGE_FILE = "garbage:file";
+    /**
+     * iot平台产品列表key
+     */
+    public final static String IOT_PLATFORM_PRODUCT_LIST = "iot:product:list";
 
 
 }

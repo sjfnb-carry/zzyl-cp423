@@ -1,8 +1,11 @@
 package com.zzyl.nursing.service;
 
 import java.util.List;
+
+import com.zzyl.common.core.page.TableDataInfo;
 import com.zzyl.nursing.domain.Elder;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zzyl.nursing.dto.ElderPageQueryDto;
 
 /**
  * 老人Service接口
@@ -59,4 +62,6 @@ public interface IElderService extends IService<Elder>
      * @return 结果
      */
     public int deleteElderById(Long id);
+
+    TableDataInfo<Elder> pageQuery(ElderPageQueryDto dto);
 }

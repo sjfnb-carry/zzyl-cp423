@@ -151,6 +151,8 @@ public class GlobalExceptionHandler {
         UNIQUE_KEY_MAP.put("room.code", "房间编号");
         UNIQUE_KEY_MAP.put("room_type.name", "房型名称");
         UNIQUE_KEY_MAP.put("sys_dict_type.dict_type", "字典类型");
+        //device.binding_location_location_type_physical_location_type_product_id
+        UNIQUE_KEY_MAP.put("device.binding_location_location_type_physical_location_type_product_id", "该老人/位置已绑定该产品，请重新选择");
     }
 
     /**

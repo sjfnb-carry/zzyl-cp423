@@ -24,8 +24,9 @@
         </dependency>
         <dependency>
             <groupId>com.zzyl</groupId>
-            <artifactId>zzyl-common</artifactId>
+            <artifactId>zzyl-framework</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.zzyl</groupId>
             <artifactId>zzyl-oss</artifactId>
