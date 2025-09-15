@@ -1,5 +1,6 @@
 package com.zzyl.nursing.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -14,16 +15,18 @@ import com.zzyl.nursing.domain.Device;
 import com.zzyl.nursing.dto.DeviceDto;
 import com.zzyl.nursing.mapper.DeviceMapper;
 import com.zzyl.nursing.service.IDeviceService;
+import com.zzyl.nursing.vo.DeviceDetailVo;
 import com.zzyl.nursing.vo.ProductVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 设备表Service业务层处理
@@ -81,8 +84,31 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
      * @return 结果
      */
     @Override
-    public int updateDevice(Device device) {
-        return deviceMapper.updateById(device);
+    @Transactional
+    public void updateDevice(DeviceDto dto) {
+        Device device = new Device();
+        BeanUtils.copyBeanProp(device, dto);
+        if (dto.getLocationType() == 0) {
+            device.setDeviceDescription(String.valueOf(dto.getBindingLocation()));
+            device.setPhysicalLocationType(-1);
+        }
+        deviceMapper.updateById(device);
+        //修改华为云
+        //数据库查询IotId
+        Device deviceDb = deviceMapper.selectOne(new LambdaQueryWrapper<Device>().eq(Device::getNodeId, dto.getNodeId()));
+        UpdateDeviceRequest request = new UpdateDeviceRequest();
+        request.withDeviceId(deviceDb.getIotId());
+        UpdateDevice body = new UpdateDevice();
+        AuthInfoWithoutSecret authInfobody = new AuthInfoWithoutSecret();
+        authInfobody.withSecureAccess(true);
+        body.withAuthInfo(authInfobody);
+        body.withDeviceName(dto.getDeviceName());
+        request.withBody(body);
+        UpdateDeviceResponse response = ioTDAClient.updateDevice(request);
+        if (response.getHttpStatusCode() != 200) {
+            throw new ServiceException("修改设备信息失败");
+        }
+
     }
 
     /**
@@ -131,36 +157,58 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     }
 
 
+    /**
+     * 获取所有产品信息
+     * 从Redis缓存中获取产品列表数据，如果缓存中没有数据则返回空列表
+     *
+     * @return List<ProductVo> 产品信息列表
+     */
     @Override
     public List<ProductVo> allProduct() {
+        // 从Redis中获取产品列表的JSON字符串
         String jsonStr = (String) redisTemplate.opsForValue().get(CacheConstants.IOT_PLATFORM_PRODUCT_LIST);
+        // 如果缓存中没有数据，返回空列表
         if (StrUtil.isEmpty(jsonStr)) {
             return new ArrayList<>();
         }
+        // 将JSON字符串转换为ProductVo对象列表
         List<ProductVo> list = JSONUtil.toList(jsonStr, ProductVo.class);
         return list;
     }
 
+
+    /**
+     * 注册设备信息
+     * <p>
+     * 该方法用于注册一个新的设备，包括对设备名称、标识码等唯一性校验，
+     * 向华为云 IoT 平台注册设备，并将设备信息保存到本地数据库。
+     * </p>
+     *
+     * @param dto 设备传输对象，包含设备的基本信息，如设备名称、标识码、产品Key等
+     */
     @Override
     public void register(DeviceDto dto) {
-        //位置类型为0随身设备时，设置物理位置类型为-1
+        // 当位置类型为0（随身设备）时，设置物理位置类型为-1，并记录绑定位置信息到设备描述中
         if (dto.getLocationType() == 0) {
             dto.setDeviceDescription(String.valueOf(dto.getBindingLocation()));
             dto.setPhysicalLocationType(-1);
         }
-        //1.判断设备名称是否重复 productName
+
+        // 1. 判断设备名称是否重复
         Device device = deviceMapper.selectOne(new LambdaQueryWrapper<Device>()
                 .eq(Device::getDeviceName, dto.getDeviceName()));
         if (device != null) {
             throw new ServiceException("设备名称重复");
         }
-        //2.检验设备标识码是否重复 nodeId
+
+        // 2. 检验设备标识码是否重复
         device = deviceMapper.selectOne(new LambdaQueryWrapper<Device>()
                 .eq(Device::getNodeId, dto.getNodeId()));
         if (device != null) {
             throw new ServiceException("设备标识码重复");
         }
-        //3.校验同一位置是否绑定了同一类产品【数据库有唯一约束，可以走异常处理器】忽略
+
+        // 3. 校验同一位置是否绑定了同一类产品（数据库有唯一约束，异常由全局处理器处理）
         LambdaQueryWrapper<Device> condition = new LambdaQueryWrapper<>();
         condition.eq(Device::getProductKey, dto.getProductKey())
                 .eq(Device::getLocationType, dto.getLocationType())
@@ -169,22 +217,23 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         if (count(condition) > 0) {
             throw new BaseException("该老人/位置已绑定该产品，请重新选择");
         }
-        //4.调用华为云的sdk，向iot中新增设备
+
+        // 4. 调用华为云SDK向IoT平台注册设备
         AddDeviceRequest request = new AddDeviceRequest();
         AddDevice body = new AddDevice();
-        // 产品id
+
+        // 设置产品ID
         body.withProductId(dto.getProductKey());
-        // 设备名称
+        // 设置设备名称
         body.withDeviceName(dto.getDeviceName());
-        // 设备标识码
+        // 设置设备标识码
         body.withNodeId(dto.getNodeId());
 
-        // 设备密钥
-        AuthInfo authInfobody = new AuthInfo();
+        // 设置设备密钥
+        AuthInfo autoInfoBody = new AuthInfo();
         String secret = UUID.randomUUID().toString().replace("-", "");
-        authInfobody.withSecret(secret);
-
-        body.setAuthInfo(authInfobody);
+        autoInfoBody.withSecret(secret);
+        body.setAuthInfo(autoInfoBody);
 
         request.withBody(body);
         AddDeviceResponse response = null;
@@ -193,20 +242,126 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         } catch (Exception e) {
             throw new ServiceException("物联网接口 - 注册设备，调用失败");
         }
+
+        // 判断设备注册是否成功
         int code = response.getHttpStatusCode();
         if (code != 201) {
             throw new ServiceException("设备注册失败");
         }
-        //5.设备数据保存到数据库
+
+        // 5. 将设备信息保存到本地数据库
         device = new Device();
-        //填充数据
+        // 复制dto中的属性到device实体中
         BeanUtils.copyBeanProp(device, dto);
+        // 设置从华为云返回的设备密钥和IoT ID
         device.setSecret(response.getAuthInfo().getSecret());
         device.setIotId(response.getDeviceId());
+
+        // 如果是特定类型的位置设备，则标记为有门禁权限
         if (dto.getLocationType() == 1 && dto.getPhysicalLocationType() == 0) {
             device.setHaveEntranceGuard(1);
         }
+
         deviceMapper.insert(device);
+    }
+
+
+    /**
+     * 获取设备详细信息
+     *
+     * @param iotId 设备ID，不能为空
+     * @return DeviceDetailVo 设备详细信息对象
+     * @throws ServiceException 当设备ID为空、设备不存在或调用华为云接口失败时抛出
+     */
+    @Override
+    public DeviceDetailVo getDeviceDetail(String iotId) {
+        if (iotId == null) {
+            throw new ServiceException("设备ID不能为空");
+        }
+        DeviceDetailVo deviceDetailVo = new DeviceDetailVo();
+        //查询华为云获取设备信息
+        ShowDeviceRequest request = new ShowDeviceRequest();
+        request.withDeviceId(iotId);
+        ShowDeviceResponse response = null;
+        try {
+            response = ioTDAClient.showDevice(request);
+        } catch (Exception e) {
+            log.error("调用华为云接口获取设备详情失败: ", e);
+            throw new ServiceException("获取华为云中设备详细失败");
+        }
+        if (response.getHttpStatusCode() != 200) {
+            throw new ServiceException("获取华为云中设备详细失败, 状态码: " + response.getHttpStatusCode());
+        }
+        if (StrUtil.isNotEmpty(response.getActiveTime())) {
+            //2019-03-03T08:10:111Z
+            deviceDetailVo.setActiveTime(LocalDateTime.parse(response.getActiveTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")));
+
+        }
+        deviceDetailVo.setDeviceStatus(response.getStatus());
+        //查询本地数据库获取设备信息
+        Device device = deviceMapper.selectOne(new LambdaQueryWrapper<Device>().eq(Device::getIotId, iotId));
+        if (device == null) {
+            throw new ServiceException("设备不存在");
+        }
+        //合并华为云和数据库的设备信息
+        BeanUtils.copyBeanProp(deviceDetailVo, device);
+        return deviceDetailVo;
+    }
+
+
+    /**
+     * 查询设备服务属性
+     *
+     * @param iotId 设备ID，不能为空
+     * @return 设备属性列表，每个元素包含eventTime、functionId、value三个字段
+     * @throws ServiceException 当设备ID为空或获取设备属性失败时抛出异常
+     */
+    @Override
+    public List<Map<String, Object>> queryServiceProperties(String iotId) {
+        if (StrUtil.isEmpty(iotId)) {
+            throw new ServiceException("设备ID不能为空");
+        }
+        ShowDeviceShadowRequest request = new ShowDeviceShadowRequest();
+        request.withDeviceId(iotId);
+        ShowDeviceShadowResponse response = ioTDAClient.showDeviceShadow(request);
+        if (response.getHttpStatusCode() != 200) {
+            throw new ServiceException("获取设备属性失败");
+        }
+        List<DeviceShadowData> shadow = response.getShadow();
+        // 处理设备影子数据，提取属性信息
+        if (CollectionUtil.isNotEmpty(shadow)) {
+            DeviceShadowProperties reported = shadow.get(0).getReported();
+            String eventTime = reported.getEventTime();
+            Map<String, Object> properties = (Map<String, Object>) reported.getProperties();
+            if (CollectionUtil.isNotEmpty(properties)) {
+                Set<Map.Entry<String, Object>> entries = properties.entrySet();
+                List<Map<String, Object>> collect = entries.stream().map(entry -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("eventTime", LocalDateTime.parse(eventTime, DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'")));
+                    map.put("functionId", entry.getKey());
+                    map.put("value", entry.getValue());
+                    return map;
+                }).collect(Collectors.toList());
+                return collect;
+            }
+        }
+
+        return List.of();
+    }
+
+
+    @Override
+    public void deleteDeviceByIotId(String iotId) {
+        //删除华为云
+        DeleteDeviceRequest request = new DeleteDeviceRequest();
+        request.withDeviceId(iotId);
+        DeleteDeviceResponse response = ioTDAClient.deleteDevice(request);
+        if (response.getHttpStatusCode() != 204) {
+            throw new ServiceException("删除设备失败");
+        }
+        //删除数据库
+        deviceMapper.delete(new LambdaQueryWrapper<Device>().eq(Device::getIotId, iotId));
 
     }
+
 }

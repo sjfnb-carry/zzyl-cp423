@@ -6,15 +6,15 @@ import com.zzyl.common.core.page.TableDataInfo;
 import com.zzyl.nursing.domain.Device;
 import com.zzyl.nursing.dto.DeviceDto;
 import com.zzyl.nursing.service.IDeviceService;
+import com.zzyl.nursing.vo.DeviceDetailVo;
 import com.zzyl.nursing.vo.ProductVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 设备表Controller
@@ -70,13 +70,54 @@ public class DeviceController extends BaseController {
 
     /**
      * 注册设备
+     *
      * @param dto
      * @return
      */
     @ApiOperation("设备注册")
     @PostMapping("/register")
-    public R<String> register(@RequestBody DeviceDto dto){
+    public R<String> register(@RequestBody DeviceDto dto) {
         deviceService.register(dto);
+        return R.ok();
+    }
+
+    /**
+     * 获取设备详细信息
+     */
+    @GetMapping("/{iotId}")
+    @ApiOperation("获取设备详细信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "iotId", value = "物联网设备id", required = true, dataTypeClass = String.class)
+    })
+    public R<DeviceDetailVo> getInfo(@PathVariable("iotId") String iotId) {
+        DeviceDetailVo detailVo = deviceService.getDeviceDetail(iotId);
+        return R.ok(detailVo);
+    }
+
+    /**
+     * 查询设备上报数据
+     */
+    @GetMapping("/queryServiceProperties/{iotId}")
+    @ApiOperation("查询设备上报数据")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "iotId", value = "物联网设备id", required = true, dataTypeClass = String.class)
+    })
+    public R<List<Map<String, Object>>> queryServiceProperties(@PathVariable("iotId") String iotId) {
+        List<Map<String, Object>> list = deviceService.queryServiceProperties(iotId);
+        return R.ok(list);
+    }
+
+    @PutMapping
+    @ApiOperation("更新设备信息")
+    public R<String> updateDevice(@RequestBody DeviceDto dto) {
+        deviceService.updateDevice(dto);
+        return R.ok();
+    }
+
+    @DeleteMapping("{iotId}")
+    @ApiOperation("删除设备")
+    public R<String> deleteDevice(@PathVariable("iotId") String iotId) {
+        deviceService.deleteDeviceByIotId(iotId);
         return R.ok();
     }
 }

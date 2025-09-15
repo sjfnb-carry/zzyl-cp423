@@ -6,11 +6,13 @@ import com.zzyl.common.core.domain.model.LoginUser;
 import com.zzyl.common.utils.DateUtils;
 import com.zzyl.common.utils.SecurityUtils;
 import com.zzyl.common.utils.UserThreadLocal;
+import lombok.SneakyThrows;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Component
@@ -18,15 +20,23 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     @Autowired
     private HttpServletRequest httpServletRequest;
 
+    @SneakyThrows
     public boolean isExclude() {
-        String requestURI = httpServletRequest.getRequestURI();
-        return requestURI.startsWith("/member");
+        try {
+            String requestURI = httpServletRequest.getRequestURI();
+            if(requestURI.startsWith("/member")){
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     // 插入数据时自动填充
     @Override
     public void insertFill(MetaObject metaObject) {
-        this.strictInsertFill(metaObject, "createTime", Date.class, new Date());
+        this.strictInsertFill(metaObject, "createTime", LocalDateTime.class, LocalDateTime.now());
         if(!isExclude()) {
             this.strictInsertFill(metaObject, "createBy", String.class, getLoginUserId() + "");
         }
@@ -35,7 +45,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     // 修改数据时自动填充
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.setFieldValByName("updateTime", new Date(), metaObject);
+        this.setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
         if(!isExclude()) {
             this.setFieldValByName("updateBy", getLoginUserId() + "", metaObject);
         }
