@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zzyl.common.core.domain.AjaxResult;
+import com.zzyl.common.core.page.TableDataInfo;
 import com.zzyl.nursing.domain.DeviceData;
 import com.zzyl.nursing.dto.DeviceDataPageReqDto;
 import com.zzyl.nursing.mapper.DeviceDataMapper;
@@ -13,9 +13,7 @@ import com.zzyl.nursing.service.IDeviceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -96,23 +94,31 @@ public class DeviceDataServiceImpl extends ServiceImpl<DeviceDataMapper, DeviceD
     }
 
     @Override
-    public AjaxResult selectDeviceDataList(DeviceDataPageReqDto dto) {
+    public TableDataInfo<DeviceData> selectDeviceDataList(DeviceDataPageReqDto dto) {
         IPage<DeviceData> page = new Page<>(dto.getPageNum(), dto.getPageSize());
         LambdaQueryWrapper<DeviceData> qw = new LambdaQueryWrapper<>();
-        qw.eq(StrUtil.isNotEmpty(dto.getDeviceName()), DeviceData::getDeviceName, dto.getDeviceName())
+        qw.like(StrUtil.isNotEmpty(dto.getDeviceName()), DeviceData::getDeviceName, dto.getDeviceName())
                 .eq(StrUtil.isNotEmpty(dto.getFunctionId()), DeviceData::getFunctionId, dto.getFunctionId())
-                .between(DeviceData::getAlarmTime, dto.getStartTime(), dto.getEndTime());
+                .between(DeviceData::getAlarmTime, dto.getStartTime(), dto.getEndTime())
+                .orderByDesc(DeviceData::getAlarmTime);
         IPage<DeviceData> deviceDataIPage = deviceDataMapper.selectPage(page, qw);
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("page", dto.getPageNum());
-        map.put("pageSize", dto.getPageSize());
-        map.put("pages", deviceDataIPage.getPages());
-        map.put("records", deviceDataIPage.getRecords());
-        map.put("total", deviceDataIPage.getTotal());
-        AjaxResult ajaxResult = new AjaxResult(0, "操作成功");
-        ajaxResult.put("data", map);
-        ajaxResult.put("operationTime", LocalDateTime.now());
-        return ajaxResult;
+
+        TableDataInfo<DeviceData> tableDataInfo = new TableDataInfo<>();
+        tableDataInfo.setMsg("操作成功");
+        tableDataInfo.setCode(200);
+        tableDataInfo.setTotal(deviceDataIPage.getTotal());
+        tableDataInfo.setRows(deviceDataIPage.getRecords());
+        return tableDataInfo;
+//        HashMap<String, Object> map = new HashMap<>();
+//        map.put("page", dto.getPageNum());
+//        map.put("pageSize", dto.getPageSize());
+//        map.put("pages", deviceDataIPage.getPages());
+//        map.put("records", deviceDataIPage.getRecords());
+//        map.put("total", deviceDataIPage.getTotal());
+//        AjaxResult ajaxResult = new AjaxResult(200, "操作成功");
+//        ajaxResult.put("data", map);
+//        ajaxResult.put("operationTime", LocalDateTime.now());
+//        return ajaxResult;
     }
 
 

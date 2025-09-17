@@ -6,6 +6,7 @@ import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.zzyl.common.constant.CacheConstants;
 import com.zzyl.framework.config.properties.HuaWeiIotConfigProperties;
 import com.zzyl.nursing.domain.Device;
 import com.zzyl.nursing.domain.DeviceData;
@@ -21,6 +22,7 @@ import org.apache.qpid.jms.transports.TransportSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -54,6 +56,8 @@ public class AmqpClient implements ApplicationRunner {
 
     @Autowired
     private IDeviceDataService deviceDataService;
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
 
     //控制台服务端订阅中消费组状态页客户端ID一栏将显示clientId参数。
     //建议使用机器UUID、MAC地址、IP等唯一标识等作为clientId。便于您区分识别不同的客户端。
@@ -246,7 +250,9 @@ public class AmqpClient implements ApplicationRunner {
                 }
             }
             if (CollectionUtil.isNotEmpty(list)) {
-               deviceDataService.saveBatch(list);
+                deviceDataService.saveBatch(list);
+                //存储最新值到redis
+                redisTemplate.opsForHash().put(CacheConstants.IOT_DEVICE_LAST_DATA, device.getIotId(), JSONUtil.toJsonStr(list));
             }
 
 

@@ -103,7 +103,7 @@ public class NursingLevelController extends BaseController {
 
     @ApiOperation("查询所有护理等级")
     @PreAuthorize("@ss.hasPermi('nursing:level:query')")
-    @GetMapping("/all")
+    @GetMapping("/listAll")
     public R<List<NursingLevel>> getAll() {
         return R.ok(nursingLevelService.getAll());
     }

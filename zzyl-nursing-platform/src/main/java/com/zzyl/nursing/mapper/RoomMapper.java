@@ -74,4 +74,6 @@ public interface RoomMapper extends BaseMapper<Room>
      * @return 房间数据
      */
     RoomVo selectFloorAndRoomAndPriceByRoomId(Integer roomId);
+
+    List<RoomVo> selectByFloorIdWithDevice(Long floorId);
 }

@@ -35,7 +35,7 @@ public class DeviceDataController extends BaseController {
     @PreAuthorize("@ss.hasPermi('elder:data:list')")
     @GetMapping("/list")
     @ApiOperation("查询设备数据列表")
-    public AjaxResult list(DeviceDataPageReqDto deviceDataPageReqDto) {
+    public TableDataInfo<DeviceData> list(@ApiParam("设备数据表查询参数") DeviceDataPageReqDto deviceDataPageReqDto) {
         return deviceDataService.selectDeviceDataList(deviceDataPageReqDto);
     }
 

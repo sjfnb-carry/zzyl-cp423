@@ -102,6 +102,7 @@ public class RoomController extends BaseController {
 
     /**
      * 根据房间id查询房间数据(楼层、房间、价格)
+     *
      * @param id 房间id
      * @return 房间数据
      */
@@ -112,6 +113,12 @@ public class RoomController extends BaseController {
     public R<RoomVo> getRoomDataById(@ApiParam(value = "房间ID", required = true) @PathVariable Integer id) {
         RoomVo data = roomService.getRoomDataById(id);
         return R.ok(data);
+    }
+
+    @GetMapping("/getRoomsWithDeviceByFloorId/{floorId}")
+    @ApiOperation("获取所有房间（智能床位）")
+    public R<List<RoomVo>> getRoomsWithDeviceByFloorId(@PathVariable(name = "floorId") Long floorId) {
+        return R.ok(roomService.getRoomsWithDeviceByFloorId(floorId));
     }
 
 }

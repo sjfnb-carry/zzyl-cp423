@@ -120,4 +120,15 @@
         where t3.bed_status = #{status}
         order by t1.code, t2.sort, t3.sort
     </select>
+
+    <select id="selectAllByDevice" resultType="com.zzyl.nursing.vo.FloorVo">
+        select t1.id, t1.name, t1.code
+        from floor t1
+                 left join zzyl.room t2 on t1.id = t2.floor_id
+                 left join device t3 on t3.location_type = 1 and t3.physical_location_type = 1 and t2.id = t3.binding_location
+                 left join zzyl.bed t4 on t2.id = t4.room_id
+                 left join device t5 on t5.location_type = 1 and t5.physical_location_type = 2 and t4.id = t5.binding_location
+        where t3.id is not null or t5.id is not null
+        group by t1.id
+    </select>
 </mapper>

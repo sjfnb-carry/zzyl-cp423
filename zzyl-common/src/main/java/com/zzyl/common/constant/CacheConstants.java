@@ -55,5 +55,10 @@ public class CacheConstants {
      */
     public final static String IOT_PLATFORM_PRODUCT_LIST = "iot:product:list";
 
+    /**
+     * iot平台设备最新数据key
+     */
+    public static final String IOT_DEVICE_LAST_DATA = "iot:device_last_data";
+
 
 }

@@ -65,5 +65,5 @@ public interface IDeviceDataService extends IService<DeviceData>
     public int deleteDeviceDataById(Long id);
 
 
-    AjaxResult selectDeviceDataList(DeviceDataPageReqDto deviceDataPageReqDto);
+    TableDataInfo<DeviceData> selectDeviceDataList(DeviceDataPageReqDto deviceDataPageReqDto);
 }

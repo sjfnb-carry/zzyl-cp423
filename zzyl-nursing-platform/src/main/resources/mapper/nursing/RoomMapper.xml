@@ -195,4 +195,79 @@
         left join room_type t3 on t1.type_name = t3.name
         where t1.id=#{roomId}
     </select>
+
+    <resultMap id="roomDeviceDataMap" type="com.zzyl.nursing.vo.RoomVo">
+        <id column="id" property="id"/>
+        <result column="floor_name" property="floorName"/>
+        <result column="floor_id" property="floorId"/>
+        <result column="room_id" property="roomId"/>
+        <result column="code" property="code"/>
+        <result column="price" property="price"/>
+        <collection property="deviceVos" ofType="com.zzyl.nursing.vo.DeviceInfo">
+            <id column="r_d_id" property="id"/>
+            <result column="r_iot_id" property="iotId"/>
+            <result column="r_device_name" property="deviceName"/>
+            <result column="r_product_key" property="productKey"/>
+            <result column="r_product_name" property="productName"/>
+        </collection>
+        <collection property="bedVoList" ofType="com.zzyl.nursing.vo.BedVo">
+            <id column="bed_id" property="id"/>
+            <result column="bed_number" property="bedNumber"/>
+            <result column="bed_status" property="bedStatus"/>
+            <result column="room_id" property="roomId"/>
+            <result column="ename" property="ename"/>
+            <result column="elderId" property="elderId"/>
+            <collection property="deviceVos" ofType="com.zzyl.nursing.vo.DeviceInfo">
+                <id column="b_d_id" property="id"/>
+                <result column="b_iotId" property="iotId"/>
+                <result column="b_device_name" property="deviceName"/>
+                <result column="b_product_key" property="productKey"/>
+                <result column="b_product_name" property="productName"/>
+            </collection>
+        </collection>
+
+    </resultMap>
+
+    <select id="selectByFloorIdWithDevice" resultMap="roomDeviceDataMap">
+        select
+        # 房间相关数据
+        t2.id,
+        t1.name as floor_name,
+        t2.floor_id as floor_id,
+        t2.id as room_id,
+        t2.code,
+        t6.price as price,
+        # 房间设备数据
+        t3.id as r_d_id,
+        t3.iot_id as r_iot_id,
+        t3.device_name as r_device_name,
+        t3.product_key as r_product_key,
+        t3.product_name as r_product_name,
+        # 房间床位数据
+        t4.id as bed_id,
+        t4.bed_number as bed_number,
+        t4.bed_status as bed_status,
+        t4.room_id as room_id,
+        t7.name as ename,
+        t7.id as elderId,
+        # 床位设备数据
+        t5.id as b_d_id,
+        t5.iot_id as b_iotId,
+        t5.device_name as b_device_name,
+        t5.product_key as b_product_key,
+        t5.product_name as b_product_name
+        from floor t1
+        left join zzyl.room t2 on t1.id = t2.floor_id
+        left join device t3
+        on t3.location_type = 1 and t3.physical_location_type = 1 and t2.id = t3.binding_location
+        left join zzyl.bed t4 on t2.id = t4.room_id
+        left join device t5
+        on t5.location_type = 1 and t5.physical_location_type = 2 and t4.id = t5.binding_location
+        left join room_type t6 on t2.type_name = t6.name
+        left join elder t7 on t4.id = t7.bed_id
+        where (t3.id is not null
+        or t5.id is not null)
+        and t1.id=#{floorId}
+        group by t1.id
+    </select>
 </mapper>

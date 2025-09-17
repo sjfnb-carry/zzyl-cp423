@@ -77,25 +77,33 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         return deviceMapper.insert(device);
     }
 
+
     /**
-     * 修改设备表
+     * 更新设备信息
      *
-     * @param device 设备表
-     * @return 结果
+     * @param dto 设备信息传输对象，包含要更新的设备信息
      */
     @Override
     @Transactional
     public void updateDevice(DeviceDto dto) {
+        // 将DTO对象转换为设备实体对象
         Device device = new Device();
         BeanUtils.copyBeanProp(device, dto);
+
+        // 处理位置类型为0的特殊情况
         if (dto.getLocationType() == 0) {
             device.setDeviceDescription(String.valueOf(dto.getBindingLocation()));
             device.setPhysicalLocationType(-1);
         }
+
+        // 更新本地数据库中的设备信息
         deviceMapper.updateById(device);
-        //修改华为云
-        //数据库查询IotId
+
+        // 修改华为云平台上的设备信息
+        // 从数据库查询设备的IotId
         Device deviceDb = deviceMapper.selectOne(new LambdaQueryWrapper<Device>().eq(Device::getNodeId, dto.getNodeId()));
+
+        // 构造华为云设备更新请求
         UpdateDeviceRequest request = new UpdateDeviceRequest();
         request.withDeviceId(deviceDb.getIotId());
         UpdateDevice body = new UpdateDevice();
@@ -104,12 +112,15 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         body.withAuthInfo(authInfobody);
         body.withDeviceName(dto.getDeviceName());
         request.withBody(body);
+
+        // 发送更新请求到华为云平台
         UpdateDeviceResponse response = ioTDAClient.updateDevice(request);
         if (response.getHttpStatusCode() != 200) {
             throw new ServiceException("修改设备信息失败");
         }
 
     }
+
 
     /**
      * 批量删除设备表
