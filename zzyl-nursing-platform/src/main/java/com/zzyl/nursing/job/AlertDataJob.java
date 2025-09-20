@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.zzyl.common.constant.CacheConstants;
+import com.zzyl.nursing.SmsUtil;
 import com.zzyl.nursing.domain.AlertData;
 import com.zzyl.nursing.domain.AlertRule;
 import com.zzyl.nursing.domain.Device;
@@ -12,6 +13,7 @@ import com.zzyl.nursing.domain.DeviceData;
 import com.zzyl.nursing.service.IAlertDataService;
 import com.zzyl.nursing.service.IAlertRuleService;
 import com.zzyl.nursing.service.IDeviceService;
+import com.zzyl.nursing.ws.WebSocketServer;
 import com.zzyl.system.service.ISysRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,8 @@ public class AlertDataJob {
     private IAlertDataService alertDataService;
     @Autowired
     private ISysRoleService sysRoleService;
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     /**
      * 处理报警数据的主流程方法。
@@ -187,21 +191,28 @@ public class AlertDataJob {
                 alertData.setType(rule.getAlertDataType());
                 //0待处理 1已处理
                 alertData.setStatus(0);
-
                 alertData.setUserId(userid);
-
                 String functionName = rule.getFunctionName();//心率
                 String operator = rule.getOperator();//运算符 >=<
                 Double value = rule.getValue();//阈值
                 Integer duration = rule.getDuration();//持续周期
                 //心率连续三次>=200
                 alertData.setAlertReason(functionName + operator + value + "持续" + duration + "次");
-
                 return alertData;
             }).collect(Collectors.toList());
-
+            //保存报警数据
             alertDataService.saveBatch(alertDataList);
+
+            //6.4 发送报警消息给接收人
+            webSocketServer.sendMessageToHandler(userIds, data, rule);
+
+            //6.5 通过短信发送报警消息给接收人
+            sendAlertMessage(userIds, data, rule);
         }
+    }
+
+    private void sendAlertMessage(List<Long> userIds, DeviceData data, AlertRule rule) {
+        SmsUtil.sendSms("18136797505", "666");
     }
 
     /**
