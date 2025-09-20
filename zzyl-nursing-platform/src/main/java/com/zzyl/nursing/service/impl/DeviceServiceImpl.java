@@ -361,6 +361,11 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     }
 
 
+    /**
+     * 根据设备IoT ID删除设备
+     *
+     * @param iotId 设备的IoT ID，用于标识要删除的设备
+     */
     @Override
     public void deleteDeviceByIotId(String iotId) {
         //删除华为云
@@ -374,5 +379,45 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         deviceMapper.delete(new LambdaQueryWrapper<Device>().eq(Device::getIotId, iotId));
 
     }
+
+
+    /**
+     * 查询产品信息
+     *
+     * @param productKey 产品唯一标识符
+     * @return 返回产品对应的服务能力列表，如果查询失败则返回null
+     */
+    @Override
+    public List<ServiceCapability> queryProduct(String productKey) {
+        // 构造查询产品请求
+        ShowProductRequest request = new ShowProductRequest();
+        request.withProductId(productKey);
+        ShowProductResponse response = ioTDAClient.showProduct(request);
+
+        // 处理查询响应结果
+        if (response.getHttpStatusCode() == 200) {
+            List<ServiceCapability> serviceCapabilities = response.getServiceCapabilities();
+            return serviceCapabilities;
+        }
+        return null;
+    }
+
+    /**
+     * 根据物联网设备ID查询对应的护理人员ID列表
+     *
+     * @param iotId 物联网设备ID
+     * @return 护理人员ID列表
+     */
+    @Override
+    public List<Long> selectNursingIdsByIotIdWithElder(String iotId) {
+        return deviceMapper.selectNursingIdsByIotIdWithElder(iotId);
+    }
+
+
+    @Override
+    public List<Long> selectNursingIdsByIotIdWithBed(String iotId) {
+        return deviceMapper.selectNursingIdsByIotIdWithBed(iotId);
+    }
+
 
 }

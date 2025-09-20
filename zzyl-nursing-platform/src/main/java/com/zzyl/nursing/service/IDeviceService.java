@@ -1,6 +1,7 @@
 package com.zzyl.nursing.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.huaweicloud.sdk.iotda.v5.model.ServiceCapability;
 import com.zzyl.nursing.domain.Device;
 import com.zzyl.nursing.dto.DeviceDto;
 import com.zzyl.nursing.vo.DeviceDetailVo;
@@ -43,7 +44,7 @@ public interface IDeviceService extends IService<Device> {
     /**
      * 修改设备表
      *
-     * @param device 设备表
+     * @param dto 设备表
      * @return 结果
      */
     public void updateDevice(DeviceDto dto);
@@ -91,7 +92,43 @@ public interface IDeviceService extends IService<Device> {
      */
     DeviceDetailVo getDeviceDetail(String iotId);
 
+    /**
+     * 根据IoT ID查询设备服务属性
+     *
+     * @param iotId IoT设备唯一标识
+     * @return 服务属性列表
+     */
     List<Map<String, Object>> queryServiceProperties(String iotId);
 
+    /**
+     * 根据IoT ID删除设备
+     *
+     * @param iotId IoT设备唯一标识
+     */
     void deleteDeviceByIotId(String iotId);
+
+    /**
+     * 根据产品Key查询服务功能定义
+     *
+     * @param productKey 产品唯一标识
+     * @return 服务功能定义列表
+     */
+    List<ServiceCapability> queryProduct(String productKey);
+
+    /**
+     * 根据IoT设备ID查询关联的护理人ID列表
+     *
+     * @param iotId IoT设备ID
+     * @return 与指定IoT设备关联的护理记录ID列表
+     */
+    List<Long> selectNursingIdsByIotIdWithElder(String iotId);
+
+
+    /**
+     * 根据IoT设备ID查询关联的床位的老人的护理人ID列表
+     *
+     * @param iotId IoT设备ID
+     * @return 与指定IoT设备关联的床位ID列表
+     */
+    List<Long> selectNursingIdsByIotIdWithBed(String iotId);
 }

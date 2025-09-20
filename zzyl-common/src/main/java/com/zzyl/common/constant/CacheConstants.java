@@ -60,5 +60,14 @@ public class CacheConstants {
      */
     public static final String IOT_DEVICE_LAST_DATA = "iot:device_last_data";
 
+    /**
+     * 设备连续累计异常次数key
+     */
+    public static final String ALERT_TRIGGER_COUNT = "alert_trigger_count:{IotId}:{FunctionId}:{RuleId}";
+
+    /**
+     * 设备报警沉默周期标识key
+     */
+    public static final String ALERT_SILENT = "alert_silent:{IotId}:{FunctionId}:{RuleId}";
 
 }

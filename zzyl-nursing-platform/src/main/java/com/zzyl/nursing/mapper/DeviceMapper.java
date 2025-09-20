@@ -61,4 +61,20 @@ public interface DeviceMapper extends BaseMapper<Device>
      * @return 结果
      */
     public int deleteDeviceByIds(Long[] ids);
+
+    /**
+     * 根据物联网ID查询关联的老人的护理人ID列表（通过老人关联）
+     * 
+     * @param iotId 物联网设备ID
+     * @return 养老人员ID列表
+     */
+    List<Long> selectNursingIdsByIotIdWithElder(String iotId);
+
+    /**
+     * 根据物联网ID查询关联的老人的护理人ID列表（通过床位关联）
+     * 
+     * @param iotId 物联网设备ID
+     * @return 养老人员ID列表
+     */
+    List<Long> selectNursingIdsByIotIdWithBed(String iotId);
 }

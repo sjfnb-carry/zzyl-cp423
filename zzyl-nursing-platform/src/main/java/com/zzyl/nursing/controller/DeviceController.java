@@ -1,5 +1,6 @@
 package com.zzyl.nursing.controller;
 
+import com.huaweicloud.sdk.iotda.v5.model.ServiceCapability;
 import com.zzyl.common.core.controller.BaseController;
 import com.zzyl.common.core.domain.R;
 import com.zzyl.common.core.page.TableDataInfo;
@@ -120,4 +121,22 @@ public class DeviceController extends BaseController {
         deviceService.deleteDeviceByIotId(iotId);
         return R.ok();
     }
+
+
+    /**
+     * 查询设备产品详情
+     * @param productKey 产品key，用于标识特定的产品
+     * @return 返回包含服务功能列表的结果对象
+     */
+    @GetMapping("/queryProduct/{productKey}")
+    @ApiOperation("查询设备产品详情")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "productKey", value = "产品key", required = true, dataTypeClass = String.class)
+    })
+    public R<List<ServiceCapability>> queryProduct(@PathVariable("productKey") String productKey) {
+        // 调用设备服务查询指定产品key的产品信息
+        List<ServiceCapability> serviceCapabilities = deviceService.queryProduct(productKey);
+        return R.ok(serviceCapabilities);
+    }
+
 }

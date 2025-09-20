@@ -424,4 +424,9 @@ public class SysRoleServiceImpl implements ISysRoleService
         }
         return userRoleMapper.batchUserRole(list);
     }
+
+    @Override
+    public List<Long> getUserIdsByRoleNameOrRoleKey(String roleNameOrRoleKey) {
+        return userRoleMapper.selectUserIdsByRoleNameOrRoleKey(roleNameOrRoleKey);
+    }
 }

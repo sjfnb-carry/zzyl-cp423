@@ -170,4 +170,12 @@ public interface ISysRoleService
      * @return 结果
      */
     public int insertAuthUsers(Long roleId, Long[] userIds);
+
+    /**
+     * 根据角色名称或角色key查询用户ID列表
+     * 
+     * @param roleNameOrRoleKey 角色名称或角色权限字符串
+     * @return 用户ID列表
+     */
+    List<Long> getUserIdsByRoleNameOrRoleKey(String roleNameOrRoleKey);
 }
