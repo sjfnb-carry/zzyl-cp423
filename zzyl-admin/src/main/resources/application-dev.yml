@@ -62,7 +62,7 @@ spring:
   devtools:
     restart:
       # 热部署开关
-      enabled: true
+      enabled: false
   # redis 配置
   redis:
     # 地址
@@ -92,7 +92,7 @@ spring:
     druid:
       # 主库数据源
       master:
-        url: jdbc:mysql://192.168.100.168:3306/zzyl?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        url: jdbc:mysql://139.196.90.89:3306/zzyl?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
         username: root
         password: heima123
       # 从库数据源
@@ -200,31 +200,32 @@ aliyun:
 dept:
   nursingId: 201
 
+
+
+#微信小程序相关配置
+wechat:
+  appId: wxdd5a6cd52a8191a8
+  appSecret: 253704a6a80c9097a6d89fe82ea3a74b
+
 # 百度千帆大模型配置
 baidu:
-  accessKey: ALTAKX2qrd4UWI0BqAf8k7AxfM
-  secretKey: 29fc01f250a24f95a7ec2b3b98729670
-  #  qianfanModel: ERNIE-4.0-8K-Preview
-  qianfanModel: ERNIE-4.5-Turbo-Latest
+  accessKey: ALTAK5mquKXViffwmLhNA877gr
+  secretKey: 5cba98b474ef41ecb7453671de47ec7a
+  qianfanModel: ERNIE-4.0-8K-Preview
   temperature: 0.7
   maxOutputTokens: 2000
   responseFormat: json_object
 
-#微信小程序相关配置
-wechat:
-  appId: wx295ea3b92ca48ee2
-  appSecret: a2f36641eb10e4a1221e002d530d3eb6
 
-#华为云Iot相关配置
 huaweicloud:
-  ak: HPUAHBOZFDOKGAJAE3ED
-  sk: 019XdyvEQhWMuBIp6NTllB6KtHmI6sL1K4TXZyUw
+  ak: HPUAZYDOAMUK11V9WMAX
+  sk: 31eFlZJzP7pmcQ88B2AJVE8sVSdhA435kpeMVZ3N
   #如果是上海一，请填写"cn-east-3"；如果是北京四，请填写"cn-north-4";
   regionId: cn-east-3
-  endpoint: 38e7abf.st1.iotda-app.cn-east-3.myhuaweicloud.com
-  projectId: d5953a89502540829d290089e4146118
+  endpoint: 96e9ec5207.st1.iotda-app.cn-east-3.myhuaweicloud.com
+  projectId: 3eaaa9e2e0b94ee9bbf840eb69b99e45
   #amqp相关配置 第二天课程接收设备数据使用
-  host: da5e7cf551.st1.iotda-app.cn-east-3.myhuaweicloud.com
-  accessKey: MeO2qO3d
-  accessCode: lJ5IaBdfYYRlgKp49vHVXtDdWw2Z3UAI
-  queueName: zzyl_amqp   #默认无需改动
+  host: 96e9ec5207.st1.iotda-app.cn-east-3.myhuaweicloud.com
+  accessKey: ge2Rmw7w
+  accessCode: nff0woAZhx5tnUNd7fNLX4nbBrf6kyJr
+  queueName: DefaultQueue   #默认无需改动
