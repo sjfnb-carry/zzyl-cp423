@@ -1,52 +1,104 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zzyl.nursing.mapper.NursingTaskMapper">
-    
+
     <resultMap type="NursingTask" id="NursingTaskResult">
-        <result property="id"    column="id"    />
-        <result property="nursingId"    column="nursing_id"    />
-        <result property="projectId"    column="project_id"    />
-        <result property="projectName"    column="project_name"    />
-        <result property="elderId"    column="elder_id"    />
-        <result property="elderName"    column="elder_name"    />
-        <result property="bedNumber"    column="bed_number"    />
-        <result property="estimatedServerTime"    column="estimated_server_time"    />
-        <result property="realServerTime"    column="real_server_time"    />
-        <result property="mark"    column="mark"    />
-        <result property="cancelReason"    column="cancel_reason"    />
-        <result property="status"    column="status"    />
-        <result property="taskImage"    column="task_image"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="remark"    column="remark"    />
+        <result property="id" column="id"/>
+        <result property="nursingId" column="nursing_id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="projectName" column="project_name"/>
+        <result property="elderId" column="elder_id"/>
+        <result property="elderName" column="elder_name"/>
+        <result property="bedNumber" column="bed_number"/>
+        <result property="estimatedServerTime" column="estimated_server_time"/>
+        <result property="realServerTime" column="real_server_time"/>
+        <result property="mark" column="mark"/>
+        <result property="cancelReason" column="cancel_reason"/>
+        <result property="status" column="status"/>
+        <result property="taskImage" column="task_image"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="remark" column="remark"/>
     </resultMap>
 
     <sql id="selectNursingTaskVo">
-        select id, nursing_id, project_id, project_name, elder_id, elder_name, bed_number, estimated_server_time, real_server_time, mark, cancel_reason, status, task_image, create_time, update_time, create_by, update_by, remark from nursing_task
+        select id,
+               nursing_id,
+               project_id,
+               project_name,
+               elder_id,
+               elder_name,
+               bed_number,
+               estimated_server_time,
+               real_server_time,
+               mark,
+               cancel_reason,
+               status,
+               task_image,
+               task_type,
+               create_time,
+               update_time,
+               create_by,
+               update_by,
+               remark
+        from nursing_task
     </sql>
+    <resultMap id="NursingTaskPageMap" type="com.zzyl.nursing.vo.NursingTaskVo">
 
-    <select id="selectNursingTaskList" parameterType="NursingTask" resultMap="NursingTaskResult">
-        <include refid="selectNursingTaskVo"/>
-        <where>  
-            <if test="nursingId != null  and nursingId != ''"> and nursing_id = #{nursingId}</if>
-            <if test="projectId != null "> and project_id = #{projectId}</if>
-            <if test="projectName != null  and projectName != ''"> and project_name like concat('%', #{projectName}, '%')</if>
-            <if test="elderId != null "> and elder_id = #{elderId}</if>
-            <if test="elderName != null  and elderName != ''"> and elder_name like concat('%', #{elderName}, '%')</if>
-            <if test="bedNumber != null  and bedNumber != ''"> and bed_number = #{bedNumber}</if>
-            <if test="estimatedServerTime != null "> and estimated_server_time = #{estimatedServerTime}</if>
-            <if test="realServerTime != null "> and real_server_time = #{realServerTime}</if>
-            <if test="mark != null  and mark != ''"> and mark = #{mark}</if>
-            <if test="cancelReason != null  and cancelReason != ''"> and cancel_reason = #{cancelReason}</if>
-            <if test="status != null "> and status = #{status}</if>
-            <if test="taskImage != null  and taskImage != ''"> and task_image = #{taskImage}</if>
+        <id column="id" property="id"/>
+        <result column="nursing_id" property="nursingId"/>
+        <result column="project_id" property="projectId"/>
+        <result column="project_name" property="projectName"/>
+        <result column="elder_id" property="elderId"/>
+        <result column="elder_name" property="elderName"/>
+        <result column="bed_number" property="bedNumber"/>
+        <result column="estimated_server_time" property="estimatedServerTime"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <collection property="nursingName" ofType="java.lang.String">
+
+        </collection>
+    </resultMap>
+
+    <select id="selectNursingTaskList" parameterType="com.zzyl.nursing.dto.NursingTaskDto"
+            resultType="com.zzyl.nursing.vo.NursingTaskVo">
+        select id,
+        nursing_id,
+        project_id,
+        project_name,
+        elder_id,
+        elder_name,
+        bed_number,
+        estimated_server_time,
+        status,
+        create_time
+        from nursing_task
+        <where>
+            <if test="elderName != null and elderName != ''">
+                and elder_name like concat('%', #{elderName}, '%')
+            </if>
+            <if test="endTime != null">
+                and estimated_server_time &lt;= #{endTime}
+            </if>
+            <if test="nurseId != null">
+                and nursing_id = #{nurseId}
+            </if>
+            <if test="projectId != null">
+                and project_id = #{projectId}
+            </if>
+            <if test="startTime != null">
+                and estimated_server_time >= #{startTime}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
         </where>
     </select>
-    
+
     <select id="selectNursingTaskById" parameterType="Long" resultMap="NursingTaskResult">
         <include refid="selectNursingTaskVo"/>
         where id = #{id}
@@ -72,7 +124,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createBy != null">create_by,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="remark != null">remark,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="nursingId != null">#{nursingId},</if>
             <if test="projectId != null">#{projectId},</if>
@@ -91,7 +143,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createBy != null">#{createBy},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="remark != null">#{remark},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateNursingTask" parameterType="NursingTask">
@@ -123,9 +175,45 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteNursingTaskByIds" parameterType="String">
-        delete from nursing_task where id in 
+        delete from nursing_task where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectDetailById" resultType="com.zzyl.nursing.vo.NursingTaskDetailVo">
+        select
+        t1.id,
+        t1.bed_number,
+        case
+        when t1.status = 3 then t1.cancel_reason
+        end as cancel_reason,
+        t1.create_by,
+        t1.create_time,
+        t1.elder_id,
+        t1.elder_name,
+        t1.estimated_server_time,
+        case
+        when t1.status = 2 then t1.mark
+        end as mark,
+        t1.nursing_id,
+        t3.nursing_level_name,
+        t1.project_id,
+        t1.project_name,
+        case
+        when t1.status = 2 then t1.real_server_time
+        end as real_server_time,
+        t1.remark,
+        t2.sex,
+        t1.status,
+        case
+        when t1.status = 2 then t1.task_image
+        end as task_image,
+        t1.update_by,
+        t1.update_time
+        from nursing_task t1
+        join elder t2 on t1.elder_id = t2.id
+        join check_in t3 on t1.elder_id = t3.elder_id
+        where t1.id=#{id}
+    </select>
 </mapper>

@@ -1,13 +1,16 @@
 package com.zzyl.nursing.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zzyl.nursing.dto.NursingTaskDto;
+import com.zzyl.nursing.vo.NursingTaskDetailVo;
+import com.zzyl.nursing.vo.NursingTaskVo;
 import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 import com.zzyl.nursing.domain.NursingTask;
 
 /**
  * 护理任务Mapper接口
- * 
+ *
  * @author alexis
  * @date 2024-11-17
  */
@@ -16,7 +19,7 @@ public interface NursingTaskMapper extends BaseMapper<NursingTask>
 {
     /**
      * 查询护理任务
-     * 
+     *
      * @param id 护理任务主键
      * @return 护理任务
      */
@@ -24,15 +27,15 @@ public interface NursingTaskMapper extends BaseMapper<NursingTask>
 
     /**
      * 查询护理任务列表
-     * 
+     *
      * @param nursingTask 护理任务
      * @return 护理任务集合
      */
-    public List<NursingTask> selectNursingTaskList(NursingTask nursingTask);
+    public List<NursingTaskVo> selectNursingTaskList(NursingTaskDto nursingTaskDto);
 
     /**
      * 新增护理任务
-     * 
+     *
      * @param nursingTask 护理任务
      * @return 结果
      */
@@ -40,7 +43,7 @@ public interface NursingTaskMapper extends BaseMapper<NursingTask>
 
     /**
      * 修改护理任务
-     * 
+     *
      * @param nursingTask 护理任务
      * @return 结果
      */
@@ -48,7 +51,7 @@ public interface NursingTaskMapper extends BaseMapper<NursingTask>
 
     /**
      * 删除护理任务
-     * 
+     *
      * @param id 护理任务主键
      * @return 结果
      */
@@ -56,9 +59,11 @@ public interface NursingTaskMapper extends BaseMapper<NursingTask>
 
     /**
      * 批量删除护理任务
-     * 
+     *
      * @param ids 需要删除的数据主键集合
      * @return 结果
      */
     public int deleteNursingTaskByIds(Long[] ids);
+
+    NursingTaskDetailVo selectDetailById(Long id);
 }

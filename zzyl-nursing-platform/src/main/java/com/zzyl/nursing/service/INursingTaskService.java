@@ -1,8 +1,15 @@
 package com.zzyl.nursing.service;
 
 import java.util.List;
+import java.util.Map;
+
+import com.zzyl.nursing.domain.Elder;
 import com.zzyl.nursing.domain.NursingTask;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zzyl.nursing.dto.NursingTaskDto;
+import com.zzyl.nursing.dto.NursingTaskExecutionDto;
+import com.zzyl.nursing.vo.NursingTaskDetailVo;
+import com.zzyl.nursing.vo.NursingTaskVo;
 
 /**
  * 护理任务Service接口
@@ -18,15 +25,15 @@ public interface INursingTaskService extends IService<NursingTask>
      * @param id 护理任务主键
      * @return 护理任务
      */
-    public NursingTask selectNursingTaskById(Long id);
+    public NursingTaskDetailVo selectNursingTaskById(Long id);
 
     /**
      * 查询护理任务列表
      * 
-     * @param nursingTask 护理任务
+     * @param nursingTaskDto 护理任务
      * @return 护理任务集合
      */
-    public List<NursingTask> selectNursingTaskList(NursingTask nursingTask);
+    public List<NursingTaskVo> selectNursingTaskList(NursingTaskDto nursingTaskDto);
 
     /**
      * 新增护理任务
@@ -59,4 +66,16 @@ public interface INursingTaskService extends IService<NursingTask>
      * @return 结果
      */
     public int deleteNursingTaskById(Long id);
+
+    /**
+     * 生成月度护理任务
+     * @param elder 老人信息
+     */
+    void generateMonthlyTask(Elder elder);
+
+    void cancel(Map<String, Object> params);
+
+    void doTask(NursingTaskExecutionDto dto);
+
+    void updateTime(Map<String, Object> params);
 }
