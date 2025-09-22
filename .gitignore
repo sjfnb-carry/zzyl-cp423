@@ -10,7 +10,7 @@ target/
 
 ######################################################################
 # IDE
-zzyl-admin/src/main/resources/*.yml
+
 ### STS ###
 .apt_generated
 .classpath
