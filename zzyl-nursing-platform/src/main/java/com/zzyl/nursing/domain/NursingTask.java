@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ import com.zzyl.common.core.domain.BaseEntity;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @ApiModel(value = "护理任务实体")
 public class NursingTask extends BaseEntity
 {
@@ -93,4 +95,8 @@ public class NursingTask extends BaseEntity
     @ApiModelProperty(value = "执行图片")
     private String taskImage;
 
+    // 任务类型
+    @Excel(name = "任务类型")
+    @ApiModelProperty(value = "任务类型 1护理计划外 2护理计划内")
+    private Integer taskType;
 }
