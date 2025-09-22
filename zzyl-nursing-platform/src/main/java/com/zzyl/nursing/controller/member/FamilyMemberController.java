@@ -53,7 +53,11 @@ public class FamilyMemberController extends BaseController {
     @Log(title = "老人家属", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult add(@ApiParam("老人家属信息") @RequestBody BindFamilyMemberRequestDto bindFamilyMemberRequestDto) {
-        return toAjax(familyMemberElderService.insertFamilyMemberElder(bindFamilyMemberRequestDto));
+        int i = familyMemberElderService.insertFamilyMemberElder(bindFamilyMemberRequestDto);
+        if (i == 0) {
+            return error("绑定失败,请重试");
+        }
+        return toAjax(i);
     }
 
     @ApiOperation("查询当前登录用户的所有老人")
