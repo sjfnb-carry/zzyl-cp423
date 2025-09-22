@@ -101,9 +101,16 @@ public class FamilyMemberElderServiceImpl extends ServiceImpl<FamilyMemberElderM
     @Override
     public int insertFamilyMemberElder(BindFamilyMemberRequestDto bindFamilyMemberRequestDto) {
         //1.通过身份证,姓名确定老人id
-        Elder elder = elderMapper.selectOne(new LambdaQueryWrapper<Elder>().eq(Elder::getIdCardNo, bindFamilyMemberRequestDto.getIdCard())
-                .eq(Elder::getName, bindFamilyMemberRequestDto.getName()));
-        Long elderId = elder.getId();
+        Elder elder = null;
+
+            elder = elderMapper.selectOne(new LambdaQueryWrapper<Elder>().eq(Elder::getIdCardNo, bindFamilyMemberRequestDto.getIdCard())
+                    .eq(Elder::getName, bindFamilyMemberRequestDto.getName()));
+        Long elderId = null;
+        try {
+            elderId = elder.getId();
+        } catch (Exception e) {
+            return 0;
+        }
         //获取当前微信登录用户信息id
         //通过本地线程获取当前登录用户id
         Long userId = UserThreadLocal.getUserId();
@@ -114,6 +121,7 @@ public class FamilyMemberElderServiceImpl extends ServiceImpl<FamilyMemberElderM
         familyMemberElder.setElderId(elderId);
         familyMemberElder.setFamilyMemberId(userId);
         familyMemberElder.setRemark(bindFamilyMemberRequestDto.getRemark());
+
         return familyMemberElderMapper.insert(familyMemberElder);
     }
 
