@@ -1,48 +1,65 @@
 package com.zzyl.nursing.service;
 
 import java.util.List;
-
-import com.zzyl.nursing.domain.DevicePropertyStatusData;
 import com.zzyl.nursing.domain.FamilyMemberElder;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.zzyl.nursing.dto.BindFamilyMemberRequestDto;
-import com.zzyl.nursing.dto.MemberListDto;
-import com.zzyl.nursing.vo.BindFamilyMemberVo;
-import com.zzyl.nursing.vo.DeviceDataByDayOrWeekVo;
-import com.zzyl.nursing.vo.FamilyElderVo;
+import com.zzyl.nursing.vo.ElderInfoVo;
 
 /**
- * 老人-家属关联中间Service接口
+ * 家庭成员与老人关联Service接口
  * 
  * @author alexis
- * @date 2025-09-20
+ * @date 2025-09-21
  */
 public interface IFamilyMemberElderService extends IService<FamilyMemberElder>
 {
-
     /**
-     * 新增老人-家属关联中间
+     * 查询家庭成员与老人关联
      * 
-     * @param bindFamilyMemberRequestDto 老人-家属关联中间
-     * @return 结果
+     * @param id 家庭成员与老人关联主键
+     * @return 家庭成员与老人关联
      */
-    public int insertFamilyMemberElder(BindFamilyMemberRequestDto bindFamilyMemberRequestDto);
-
-    List<BindFamilyMemberVo> selectAllFamilyMember();
-
-    List<FamilyElderVo> selectFamilyMemberList(MemberListDto memberListDto);
-
-    DevicePropertyStatusData selectDeviceInfoByiotId(String iotId);
+    public FamilyMemberElder selectFamilyMemberElderById(Long id);
 
     /**
-     * 批量删除老人-家属关联中间
-     *
-     * @param id 需要删除的老人-家属关联中间主键集合
+     * 查询家庭成员与老人关联列表
+     * 
+     * @param familyMemberElder 家庭成员与老人关联
+     * @return 家庭成员与老人关联集合
+     */
+    public List<FamilyMemberElder> selectFamilyMemberElderList(FamilyMemberElder familyMemberElder);
+
+    /**
+     * 新增家庭成员与老人关联
+     * 
+     * @param familyMemberElder 家庭成员与老人关联
      * @return 结果
      */
-    public int deleteFamilyMemberElderById(String id);
+    public int insertFamilyMemberElder(FamilyMemberElder familyMemberElder);
 
-    List<DeviceDataByDayOrWeekVo> queryDeviceDataListByDay(String functionId, Long startTime, Long endTime, String iotId);
+    /**
+     * 修改家庭成员与老人关联
+     * 
+     * @param familyMemberElder 家庭成员与老人关联
+     * @return 结果
+     */
+    public int updateFamilyMemberElder(FamilyMemberElder familyMemberElder);
 
-    List<DeviceDataByDayOrWeekVo> queryDeviceDataListByWeek(String functionId, Long startTime, Long endTime, String iotId);
+    /**
+     * 批量删除家庭成员与老人关联
+     * 
+     * @param ids 需要删除的家庭成员与老人关联主键集合
+     * @return 结果
+     */
+    public int deleteFamilyMemberElderByIds(Long[] ids);
+
+    /**
+     * 删除家庭成员与老人关联信息
+     * 
+     * @param id 家庭成员与老人关联主键
+     * @return 结果
+     */
+    public int deleteFamilyMemberElderById(Long id);
+
+    List<ElderInfoVo> listByPage(Integer pageNum, Integer pageSize);
 }

@@ -1,9 +1,14 @@
 package com.zzyl.nursing.service;
 
 import java.util.List;
+import java.util.Map;
+
+import com.zzyl.common.core.domain.AjaxResult;
 import com.zzyl.nursing.domain.FamilyMember;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zzyl.nursing.dto.DeviceDataQueryDto;
 import com.zzyl.nursing.dto.UserLoginRequestDto;
+import com.zzyl.nursing.vo.ElderInfoVo;
 import com.zzyl.nursing.vo.LoginVo;
 
 /**
@@ -63,4 +68,16 @@ public interface IFamilyMemberService extends IService<FamilyMember>
     public int deleteFamilyMemberById(Long id);
 
     LoginVo login(UserLoginRequestDto userLoginRequestDto);
+
+    void bindElder(Map<String, Object> params);
+
+    List<Map<String, Object>> listElders();
+
+    List<ElderInfoVo> listByPage(Integer pageNum, Integer pageSize);
+
+    AjaxResult queryDevicePropertyStatus(String iotId);
+
+    List<Map<String, Object>> queryDeviceDataListByDay(DeviceDataQueryDto dto);
+
+    List<Map<String, Object>> queryDeviceDataListByWeek(DeviceDataQueryDto dto);
 }

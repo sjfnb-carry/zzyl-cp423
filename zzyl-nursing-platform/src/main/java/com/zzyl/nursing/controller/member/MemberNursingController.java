@@ -37,4 +37,5 @@ public class MemberNursingController extends BaseController {
     public R<NursingProject> getInfo(@ApiParam("护理项目ID") @PathVariable("id") Long id) {
         return R.ok(nursingProjectService.getById(id));
     }
+
 }

@@ -1,6 +1,8 @@
 package com.zzyl.nursing.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import com.zzyl.common.core.domain.AjaxResult;
 import com.zzyl.common.core.page.TableDataInfo;
@@ -66,4 +68,7 @@ public interface IDeviceDataService extends IService<DeviceData>
 
 
     TableDataInfo<DeviceData> selectDeviceDataList(DeviceDataPageReqDto deviceDataPageReqDto);
+    List<Map<String, Object>> queryDeviceDataListByDay(String iotId, String functionId, LocalDateTime startTime, LocalDateTime endTime);
+
+    List<Map<String, Object>> queryDeviceDataListByWeek(String iotId, String functionId, LocalDateTime startTime, LocalDateTime endTime);
 }

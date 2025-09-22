@@ -13,8 +13,10 @@ import com.zzyl.nursing.service.IDeviceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 设备数据表Service业务层处理
@@ -121,5 +123,14 @@ public class DeviceDataServiceImpl extends ServiceImpl<DeviceDataMapper, DeviceD
 //        return ajaxResult;
     }
 
+    @Override
+    public List<Map<String, Object>> queryDeviceDataListByDay(String iotId, String functionId, LocalDateTime startTime, LocalDateTime endTime) {
+        return deviceDataMapper.queryDeviceDataListByDay(iotId, functionId, startTime, endTime);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryDeviceDataListByWeek(String iotId, String functionId, LocalDateTime startTime, LocalDateTime endTime) {
+        return deviceDataMapper.queryDeviceDataListByWeek(iotId, functionId, startTime, endTime);
+    }
 
 }

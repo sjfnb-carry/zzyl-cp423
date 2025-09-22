@@ -123,4 +123,87 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="queryDeviceDataListByDay" resultType="java.util.Map">
+        SELECT h.dateTime,
+               COALESCE(d.dataValue, 0) AS dataValue
+        FROM (SELECT '00:00' AS dateTime
+              UNION ALL
+              SELECT '01:00' AS dateTime
+              UNION ALL
+              SELECT '02:00' AS dateTime
+              UNION ALL
+              SELECT '03:00' AS dateTime
+              UNION ALL
+              SELECT '04:00' AS dateTime
+              UNION ALL
+              SELECT '05:00' AS dateTime
+              UNION ALL
+              SELECT '06:00' AS dateTime
+              UNION ALL
+              SELECT '07:00' AS dateTime
+              UNION ALL
+              SELECT '08:00' AS dateTime
+              UNION ALL
+              SELECT '09:00' AS dateTime
+              UNION ALL
+              SELECT '10:00' AS dateTime
+              UNION ALL
+              SELECT '11:00' AS dateTime
+              UNION ALL
+              SELECT '12:00' AS dateTime
+              UNION ALL
+              SELECT '13:00' AS dateTime
+              UNION ALL
+              SELECT '14:00' AS dateTime
+              UNION ALL
+              SELECT '15:00' AS dateTime
+              UNION ALL
+              SELECT '16:00' AS dateTime
+              UNION ALL
+              SELECT '17:00' AS dateTime
+              UNION ALL
+              SELECT '18:00' AS dateTime
+              UNION ALL
+              SELECT '19:00' AS dateTime
+              UNION ALL
+              SELECT '20:00' AS dateTime
+              UNION ALL
+              SELECT '21:00' AS dateTime
+              UNION ALL
+              SELECT '22:00' AS dateTime
+              UNION ALL
+              SELECT '23:00' AS dateTime) h
+                 LEFT JOIN (SELECT DATE_FORMAT(alarm_time, '%H:00')           AS dateTime,
+                                   ROUND(AVG(CAST(data_value AS DECIMAL)), 0) AS dataValue
+                            FROM device_data
+                            WHERE function_id = #{functionId} and iot_id=#{iotId}
+                              AND alarm_time between #{startTime} and #{endTime}
+                            GROUP BY DATE_FORMAT(alarm_time, '%H')) d ON h.dateTime = d.dateTime
+        ORDER BY h.dateTime;
+    </select>
+
+    <select id="queryDeviceDataListByWeek" resultType="java.util.Map">
+        WITH RECURSIVE date_series AS (
+        SELECT DATE(#{startTime}) AS date_val
+        UNION ALL
+        SELECT DATE_ADD(date_val, INTERVAL 1 DAY)
+        FROM date_series
+        WHERE date_val &lt; DATE(#{endTime})
+        )
+        SELECT
+        DATE_FORMAT(ds.date_val, '%m.%d') AS dateTime,
+        COALESCE(AVG(CAST(dd.data_value AS DECIMAL(10, 2))), 0) AS dataValue
+        FROM
+        date_series ds
+        LEFT JOIN
+        device_data dd ON DATE(dd.alarm_time) = ds.date_val
+        AND dd.iot_id = #{iotId}
+        AND dd.function_id = #{functionId}
+        GROUP BY
+        ds.date_val
+        ORDER BY
+        ds.date_val;
+
+    </select>
 </mapper>
