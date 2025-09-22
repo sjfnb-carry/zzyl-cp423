@@ -38,24 +38,60 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 @Slf4j
 @Service
 public class FamilyMemberElderServiceImpl extends ServiceImpl<FamilyMemberElderMapper, FamilyMemberElder> implements IFamilyMemberElderService {
+    /**
+     * 老人-家属关联Mapper
+     */
     @Autowired
     private FamilyMemberElderMapper familyMemberElderMapper;
+    
+    /**
+     * 老人Mapper
+     */
     @Autowired
     private ElderMapper elderMapper;
+    
+    /**
+     * 家属Mapper
+     */
     @Autowired
     private FamilyMemberMapper familyMemberMapper;
+    
+    /**
+     * 床位Mapper
+     */
     @Autowired
     private BedMapper bedMapper;
+    
+    /**
+     * 房间Mapper
+     */
     @Autowired
     private RoomMapper roomMapper;
+    
+    /**
+     * 设备Mapper
+     */
     @Autowired
     private DeviceMapper deviceMapper;
+    
+    /**
+     * Redis模板
+     */
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
+    
+    /**
+     * 告警规则Mapper
+     */
     @Autowired
     private AlertRuleMapper alertRuleMapper;
+    
+    /**
+     * 设备数据Mapper
+     */
     @Autowired
     private DeviceDataMapper deviceDataMapper;
+    
     /**
      * 新增老人-家属关联中间
      *
@@ -159,11 +195,13 @@ public class FamilyMemberElderServiceImpl extends ServiceImpl<FamilyMemberElderM
                             vo.setBedNumber(bed.getBedNumber());
                             // 查询房间类型信息
                             if (bed.getRoomId() != null) {
-                                List<Room> roomTypes = roomMapper.selectList(
-                                        new LambdaQueryWrapper<Room>().eq(Room::getId, bed.getRoomId())
-                                );
-                                if (!roomTypes.isEmpty()) {
-                                    vo.setTypeName(roomTypes.get(0).getTypeName());
+                                Room roomTypes = roomMapper.selectById(bed.getRoomId());
+                                /*List<Room> roomTypes = roomMapper.selectList(
+                                        new LambdaQueryWrapper<Room>()
+                                        .eq(Room::getId, bed.getRoomId())
+                                );*/
+                                if (!roomTypes.getTypeName().isEmpty()) {
+                                    vo.setTypeName(roomTypes.getTypeName());
                                 }
                             }
                         }
@@ -171,7 +209,8 @@ public class FamilyMemberElderServiceImpl extends ServiceImpl<FamilyMemberElderM
                     List<Device> devices = deviceMapper.selectList(
                             new LambdaQueryWrapper<Device>()
                                     .eq(Device::getBindingLocation, elder.getId())
-                                    .eq(Device::getLocationType, 0) // 0：随身设备
+                                    // 0：随身设备
+                                    .eq(Device::getLocationType, 0)
                     );
                     if (!devices.isEmpty()) {
                         for (Device device : devices) {
@@ -304,16 +343,18 @@ public class FamilyMemberElderServiceImpl extends ServiceImpl<FamilyMemberElderM
 
         // 按3小时分组统计数据
         for (DeviceData deviceData : deviceDataList) {
-
-
+            // 获取设备数据的报警时间
             LocalDateTime alarmTime = deviceData.getAlarmTime();
             if (alarmTime != null) {
+                // 获取小时数
                 int hour = alarmTime.getHour();
                 // 计算所属时间段 (0-2 => 0, 3-5 => 1, ..., 21-23 => 7)
                 int periodIndex = hour / 3;
+                // 获取数据值
                 String dataValue = deviceData.getDataValue();
                 if (dataValue != null && !dataValue.isEmpty()) {
                     try {
+                        // 将数据值转换为BigDecimal
                         BigDecimal value = new BigDecimal(dataValue);
                         // 累加数值到对应时间段
                         periodSums[periodIndex] = periodSums[periodIndex].add(value);
@@ -362,7 +403,6 @@ public class FamilyMemberElderServiceImpl extends ServiceImpl<FamilyMemberElderM
                 .le(DeviceData::getAlarmTime,
                         LocalDateTime.ofInstant(new Date(endTime).toInstant(), ZoneId.systemDefault()))
         );
-
         // 创建7天的时间点 (使用日期格式)
         List<DeviceDataByDayOrWeekVo> result = new ArrayList<>();
         
@@ -378,6 +418,7 @@ public class FamilyMemberElderServiceImpl extends ServiceImpl<FamilyMemberElderM
 
         // 按天分组统计数据
         for (DeviceData deviceData : deviceDataList) {
+            // 获取设备数据的报警时间
             LocalDateTime alarmTime = deviceData.getAlarmTime();
             if (alarmTime != null) {
                 // 计算是开始时间后的第几天 (0-6)
@@ -385,6 +426,7 @@ public class FamilyMemberElderServiceImpl extends ServiceImpl<FamilyMemberElderM
                 int dayIndex = (int) (diffInMillies / (24 * 60 * 60 * 1000));
                 // 确保索引在有效范围内
                 if (dayIndex >= 0 && dayIndex < 7) {
+                    // 获取数据值
                     String dataValue = deviceData.getDataValue();
                     if (dataValue != null && !dataValue.isEmpty()) {
                         try {
