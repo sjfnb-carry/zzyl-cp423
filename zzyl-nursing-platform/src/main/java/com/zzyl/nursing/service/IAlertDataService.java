@@ -1,8 +1,13 @@
 package com.zzyl.nursing.service;
 
 import java.util.List;
+import java.util.Map;
+
+import com.zzyl.common.core.page.TableDataInfo;
 import com.zzyl.nursing.domain.AlertData;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zzyl.nursing.dto.AlertDataDto;
+import com.zzyl.nursing.vo.AlertDataVo;
 
 /**
  * 报警数据Service接口
@@ -23,10 +28,10 @@ public interface IAlertDataService extends IService<AlertData>
     /**
      * 查询报警数据列表
      * 
-     * @param alertData 报警数据
+     * @param alertDataDto 报警数据
      * @return 报警数据集合
      */
-    public List<AlertData> selectAlertDataList(AlertData alertData);
+    public TableDataInfo<AlertDataVo> selectAlertDataList(AlertDataDto alertDataDto);
 
     /**
      * 新增报警数据
@@ -42,7 +47,7 @@ public interface IAlertDataService extends IService<AlertData>
      * @param alertData 报警数据
      * @return 结果
      */
-    public int updateAlertData(AlertData alertData);
+    public int updateAlertData(Map<String,Object> alertData);
 
     /**
      * 批量删除报警数据

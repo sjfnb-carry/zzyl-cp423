@@ -1,9 +1,13 @@
 package com.zzyl.nursing.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.zzyl.nursing.dto.AlertDataDto;
+import com.zzyl.nursing.vo.AlertDataVo;
 import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 import com.zzyl.nursing.domain.AlertData;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 报警数据Mapper接口
@@ -25,10 +29,10 @@ public interface AlertDataMapper extends BaseMapper<AlertData>
     /**
      * 查询报警数据列表
      * 
-     * @param alertData 报警数据
+     * @param alertDataDto 报警数据
      * @return 报警数据集合
      */
-    public List<AlertData> selectAlertDataList(AlertData alertData);
+    public List<AlertDataVo> selectAlertDataList(@Param("page") IPage<AlertData> page, @Param("alertDataDto") AlertDataDto alertDataDto);
 
     /**
      * 新增报警数据
