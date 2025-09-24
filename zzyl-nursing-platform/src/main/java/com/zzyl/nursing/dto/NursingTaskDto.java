@@ -3,6 +3,7 @@ package com.zzyl.nursing.dto;
 import com.zzyl.nursing.domain.NursingTask;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +14,7 @@ public class NursingTaskDto extends NursingTask {
     private String elderName;
 
     @ApiModelProperty("结束时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
 
     @ApiModelProperty("护理员ID")
@@ -28,6 +30,7 @@ public class NursingTaskDto extends NursingTask {
     private Integer projectId;
 
     @ApiModelProperty("开始时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime;
 
     @ApiModelProperty("状态 (1待执行 2已执行 3已关闭)")

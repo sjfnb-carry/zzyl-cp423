@@ -101,11 +101,16 @@ public class FamilyMemberServiceImpl extends ServiceImpl<FamilyMemberMapper, Fam
         if (ObjUtil.isEmpty(elder)) {
             throw new ServiceException("未找到该老人");
         }
+        //如果老人名字和身份证不匹配也不能绑定
+        if (!elder.getName().equals(name)) {
+            throw new ServiceException("身份证和姓名不匹配");
+        }
         //查询关系是否存在
         FamilyMemberElder familyMemberElderDb = familyMemberElderService.getOne(new LambdaQueryWrapper<FamilyMemberElder>().eq(FamilyMemberElder::getElderId, elder.getId()));
         if (ObjUtil.isNotEmpty(familyMemberElderDb)) {
             throw new ServiceException("该老人已绑定,请勿重复绑定");
         }
+
         //添加家人-老人关系
         FamilyMemberElder familyMemberElder = FamilyMemberElder.builder()
                 .familyMemberId(UserThreadLocal.getUserId())

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zzyl.common.core.domain.model.LoginUser;
+import com.zzyl.common.exception.ServiceException;
 import com.zzyl.common.utils.IDCardUtils;
 import com.zzyl.common.utils.SecurityUtils;
 import com.zzyl.common.utils.StringUtils;
@@ -168,6 +169,15 @@ public class NursingTaskServiceImpl extends ServiceImpl<NursingTaskMapper, Nursi
         // 从参数中提取任务ID和预估服务时间
         Long taskId = Long.valueOf(params.get("taskId").toString());
         Object estimatedServerTime = params.get("estimatedServerTime");
+        if (estimatedServerTime == null) {
+            throw new ServiceException("预计服务时间不能为空");
+        }
+        // 增加对非法日期值的校验
+        String timeStr = estimatedServerTime.toString();
+        if ("Invalid Date".equals(timeStr) || timeStr == null || timeStr.trim().isEmpty()) {
+            throw new ServiceException("预计服务时间不能为空");
+        }
+
         LocalDateTime time = LocalDateTime.parse(estimatedServerTime.toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         // 构建护理任务对象并更新数据库

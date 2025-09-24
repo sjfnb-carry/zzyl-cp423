@@ -204,6 +204,5 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ds.date_val
         ORDER BY
         ds.date_val;
-
     </select>
 </mapper>

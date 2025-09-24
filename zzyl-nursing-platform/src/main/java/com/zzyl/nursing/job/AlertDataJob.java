@@ -207,7 +207,7 @@ public class AlertDataJob {
             webSocketServer.sendMessageToHandler(userIds, data, rule);
 
             //6.5 通过短信发送报警消息给接收人
-            sendAlertMessage(userIds, data, rule);
+//            sendAlertMessage(userIds, data, rule);
         }
     }
 

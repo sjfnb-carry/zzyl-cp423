@@ -1,26 +1,24 @@
 package com.zzyl.nursing.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.zzyl.common.core.page.TableDataInfo;
+import com.zzyl.nursing.domain.DeviceData;
+import com.zzyl.nursing.dto.DeviceDataPageReqDto;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import com.zzyl.common.core.domain.AjaxResult;
-import com.zzyl.common.core.page.TableDataInfo;
-import com.zzyl.nursing.domain.DeviceData;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.zzyl.nursing.dto.DeviceDataPageReqDto;
-
 /**
  * 设备数据表Service接口
- * 
+ *
  * @author alexis
  * @date 2025-09-15
  */
-public interface IDeviceDataService extends IService<DeviceData>
-{
+public interface IDeviceDataService extends IService<DeviceData> {
     /**
      * 查询设备数据表
-     * 
+     *
      * @param id 设备数据表主键
      * @return 设备数据表
      */
@@ -28,7 +26,7 @@ public interface IDeviceDataService extends IService<DeviceData>
 
     /**
      * 查询设备数据表列表
-     * 
+     *
      * @param deviceData 设备数据表
      * @return 设备数据表集合
      */
@@ -36,7 +34,7 @@ public interface IDeviceDataService extends IService<DeviceData>
 
     /**
      * 新增设备数据表
-     * 
+     *
      * @param deviceData 设备数据表
      * @return 结果
      */
@@ -44,7 +42,7 @@ public interface IDeviceDataService extends IService<DeviceData>
 
     /**
      * 修改设备数据表
-     * 
+     *
      * @param deviceData 设备数据表
      * @return 结果
      */
@@ -52,7 +50,7 @@ public interface IDeviceDataService extends IService<DeviceData>
 
     /**
      * 批量删除设备数据表
-     * 
+     *
      * @param ids 需要删除的设备数据表主键集合
      * @return 结果
      */
@@ -60,7 +58,7 @@ public interface IDeviceDataService extends IService<DeviceData>
 
     /**
      * 删除设备数据表信息
-     * 
+     *
      * @param id 设备数据表主键
      * @return 结果
      */
@@ -68,6 +66,7 @@ public interface IDeviceDataService extends IService<DeviceData>
 
 
     TableDataInfo<DeviceData> selectDeviceDataList(DeviceDataPageReqDto deviceDataPageReqDto);
+
     List<Map<String, Object>> queryDeviceDataListByDay(String iotId, String functionId, LocalDateTime startTime, LocalDateTime endTime);
 
     List<Map<String, Object>> queryDeviceDataListByWeek(String iotId, String functionId, LocalDateTime startTime, LocalDateTime endTime);

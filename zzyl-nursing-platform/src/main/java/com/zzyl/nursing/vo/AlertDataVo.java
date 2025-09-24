@@ -1,16 +1,15 @@
 package com.zzyl.nursing.vo;
 
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import com.zzyl.common.annotation.Excel;
-import com.zzyl.common.core.domain.BaseEntity;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 /**
  * 报警数据对象 alert_data
@@ -23,11 +22,12 @@ import com.zzyl.common.core.domain.BaseEntity;
 @AllArgsConstructor
 @Builder
 @ApiModel("报警数据VO类")
-public class AlertDataVo{
+public class AlertDataVo {
     @ApiModelProperty
     private String createBy;
 
     @ApiModelProperty
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
     @ApiModelProperty
     private String updateBy;

@@ -1,38 +1,30 @@
 package com.zzyl.nursing.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zzyl.common.core.page.TableDataInfo;
+import com.zzyl.common.utils.SecurityUtils;
+import com.zzyl.nursing.domain.AlertData;
+import com.zzyl.nursing.dto.AlertDataDto;
+import com.zzyl.nursing.mapper.AlertDataMapper;
+import com.zzyl.nursing.mapper.BedMapper;
+import com.zzyl.nursing.mapper.FloorMapper;
+import com.zzyl.nursing.mapper.RoomMapper;
+import com.zzyl.nursing.service.IAlertDataService;
+import com.zzyl.nursing.vo.AlertDataVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.LocalDateTimeUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zzyl.common.core.page.TableDataInfo;
-import com.zzyl.common.utils.DateUtils;
-import com.zzyl.common.utils.SecurityUtils;
-import com.zzyl.common.utils.bean.BeanUtils;
-import com.zzyl.nursing.domain.Bed;
-import com.zzyl.nursing.domain.Floor;
-import com.zzyl.nursing.domain.Room;
-import com.zzyl.nursing.dto.AlertDataDto;
-import com.zzyl.nursing.mapper.BedMapper;
-import com.zzyl.nursing.mapper.FloorMapper;
-import com.zzyl.nursing.mapper.RoomMapper;
-import com.zzyl.nursing.vo.AlertDataVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import com.zzyl.nursing.mapper.AlertDataMapper;
-import com.zzyl.nursing.domain.AlertData;
-import com.zzyl.nursing.service.IAlertDataService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 报警数据Service业务层处理
@@ -103,12 +95,11 @@ public class AlertDataServiceImpl extends ServiceImpl<AlertDataMapper, AlertData
         }).collect(Collectors.toList());
         TableDataInfo<AlertDataVo> tableDataInfo = new TableDataInfo<>();
         tableDataInfo.setRows(collect);
-        tableDataInfo.setTotal(page.getTotal());
+        tableDataInfo.setTotal(collect.size());
         tableDataInfo.setMsg("请求成功");
         tableDataInfo.setCode(200);
         return tableDataInfo;
     }
-
 
 
     /**
@@ -138,24 +129,27 @@ public class AlertDataServiceImpl extends ServiceImpl<AlertDataMapper, AlertData
                 .withZoneSameInstant(ZoneId.of("Asia/Shanghai"))
                 .toLocalDateTime();
         AlertData alertDataDb = alertDataMapper.selectById(id);
-        if(alertDataDb == null){
+        if (alertDataDb == null) {
             throw new RuntimeException("数据不存在");
         }
         LocalDateTime createTime = alertDataDb.getCreateTime();
+        //获取当前线程id的操作人
+        String operator = SecurityUtils.getLoginUser().getUser().getNickName();
         // 获取时间范围
         LocalDateTime startTime = createTime.minusMinutes(2);
         LocalDateTime endTime = createTime.plusMinutes(2);
         List<AlertData> alertDataList = alertDataMapper.selectList(new LambdaQueryWrapper<AlertData>()
                 .eq(AlertData::getIotId, alertDataDb.getIotId())
                 .eq(AlertData::getFunctionId, alertDataDb.getFunctionId())
-                .eq(AlertData::getDataValue,alertDataDb.getDataValue())
-                .between(AlertData::getCreateTime,startTime,endTime));
+                .eq(AlertData::getDataValue, alertDataDb.getDataValue())
+                .between(AlertData::getCreateTime, startTime, endTime));
         alertDataList.forEach(alertData -> {
             alertData.setProcessingResult(processingResult);
             alertData.setProcessingTime(parse);
             alertData.setStatus(1);
+            alertData.setProcessorName(operator);
         });
-       return updateBatchById(alertDataList) ? 1:0;
+        return updateBatchById(alertDataList) ? 1 : 0;
     }
 
     /**
